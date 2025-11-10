@@ -5,7 +5,7 @@
 ;#include %A_LineFile%\..\IC_BrivMaster_SharedFunctions.ahk
 
 SH_UpdateClass.AddClassFunctions(GameObjectStructure, IC_BrivMaster_GameObjectStructure_Add) ;Required so that the Ellywick tool can work in the same way as the main script. TODO: Might not be needed if Aug25 SH update is applied and has built-in methods for this
-SH_UpdateClass.UpdateClassFunctions(g_SF.Memory, IC_BrivMaster_MemoryFunctions_Class) ;Make memory overrides available as well TODO: This doesn't actually work?
+SH_UpdateClass.AddClassFunctions(g_SF.Memory, IC_BrivMaster_MemoryFunctions_Class) ;Make memory overrides available as well TODO: This doesn't actually work?
 
 ; Naming convention in Script Hub is that simple global variables should start with ``g_`` to make it easy to know that a global variable is what is being used.
 global g_IriBrivMaster := new IC_IriBrivMaster_Component
@@ -807,7 +807,7 @@ Class IC_IriBrivMaster_Component
 
 	ChestSnatcher_ClaimDailyRewards()
 	{
-		lastSaveEpoch:=g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.SaveHandler.lastUserDataSaveTime.Read() ;Reads in seconds since 01Jan0001
+		lastSaveEpoch:=g_SF.Memory.IBM_ReadLastSave() ;Reads in seconds since 01Jan0001
 		If (lastSaveEpoch=="")
 			return
 		lastSave:=this.ChestSnatcher_CNETimeStampToDate(lastSaveEpoch)
@@ -921,7 +921,7 @@ Class IC_IriBrivMaster_Component
 
 	ChestSnatcher_Process()
 	{
-		lastSaveEpoch:=g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.SaveHandler.lastUserDataSaveTime.Read() ;Reads in seconds since 01Jan0001
+		lastSaveEpoch:=g_SF.Memory.IBM_ReadLastSave() ;Reads in seconds since 01Jan0001
 		If (lastSaveEpoch=="")
 			return
 		lastSave:=this.ChestSnatcher_CNETimeStampToDate(lastSaveEpoch)
