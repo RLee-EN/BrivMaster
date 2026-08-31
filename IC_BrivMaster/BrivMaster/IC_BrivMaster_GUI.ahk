@@ -20,6 +20,8 @@
 		global ;Required for GUI control variables
 		this.Theme:=new IBM_Theme()
 		this.Wide:=g_IBM_Settings.HUB.IBM_Window_Wide
+		g_TabControlX:=g_IBM_Settings.IBM_BM_X
+		g_TabControlY:=g_IBM_Settings.IBM_BM_Y
 		if(this.Wide)
 		{
 			g_TabControlHeight:=566
@@ -65,7 +67,7 @@
 		Gui, IBM_Home:Add, Tab3, x5 y%g_TabControlStartHeight% w%g_TabControlWidth% h%g_TabControlHeight% vModronTabControl, %g_TabList%
 		this.AddTab("Home|Game|Route|Levels")
 		this.Theme.UseThemeTitleBar("IBM_Home")
-		Gui, IBM_Home:Show, %  "x0 y0" . " w" . g_TabControlWidth+10 . " h" . g_TabControlHeight+g_TabControlStartHeight+6  . " NA", % "Briv Master Home (Loading...)"
+		Gui, IBM_Home:Show, %  "x" . g_TabControlX . " y" . g_TabControlY . " w" . g_TabControlWidth+10 . " h" . g_TabControlHeight+g_TabControlStartHeight+6  . " NA", % "Briv Master Home (Loading...)"
 
 		;++++++++++++++++++HOME TAB++++++++++++++++++
 		Gui, IBM_Home:Tab, Home

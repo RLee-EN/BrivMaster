@@ -181,6 +181,8 @@ Class IC_IriBrivMaster_Component
 		settings.IBM_Game_Launch["_DEFAULT"]:=""
 		settings.IBM_Game_Hide_Launcher["_DEFAULT"]:=false
 		settings.IBM_OffLine_Timeout["_DEFAULT"]:=5
+		settings.IBM_BM_X["_DEFAULT"]:=0
+		settings.IBM_BM_Y["_DEFAULT"]:=0
 		settings.IBM_Window_X["_DEFAULT"]:=0
 		settings.IBM_Window_Y["_DEFAULT"]:=900 ;To keep the window on-screen at 1080
 		settings.IBM_Window_Hide["_DEFAULT"]:=false

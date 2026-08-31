@@ -16,6 +16,8 @@ g_MouseTooltips.ByHandle:={}
 global g_TabControlHeight
 global g_TabControlStartHeight
 global g_TabControlWidth
+global g_TabControlX
+global g_TabControlY
 
 try
 {
@@ -43,7 +45,7 @@ global g_IriBrivMaster_StopFunctions:={}
 g_IriBrivMaster.Init()
 
 GuiControl, IBM_Home:MoveDraw, ModronTabControl, % "w" . g_TabControlWidth . " h" . g_TabControlHeight
-Gui, IBM_Home:Show, % "w" . g_TabControlWidth+10 . " h" . g_TabControlHeight+g_TabControlStartHeight+6 . " NA", % "Briv Master Home"
+Gui, IBM_Home:Show, % "x" . g_TabControlX . " y" . g_TabControlY . " w" . g_TabControlWidth+10 . " h" . g_TabControlHeight+g_TabControlStartHeight+6 . " NA", % "Briv Master Home"
 g_IriBrivMaster_GUI.ApplyTooltips() ;Must be after controls are created by Gui, Show
 OnMessage(0x200, "CheckControlForTooltip") ;WM_MOUSEMOVE for tooltip tracking
 
