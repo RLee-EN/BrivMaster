@@ -141,13 +141,14 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 
 	GetTargetStacks(ignoreHaste:=false, forceRecalc:=false) ;Number of Steelbones stacks needed for the next run. Ignore haste is used for the status string showing the expected per run stack usage, rather than in-run calculation
 	{
+		targetMultiplier:=g_IBM_Settings["IBM_GetTargetStacks_Multiplier"]
 		if(ignoreHaste)
-			return this.GetTargetStacksForFullRun(true)
+			return CEIL(this.GetTargetStacksForFullRun(true) * targetMultiplier)
 		else
 		{
 			this.UpdateLeftoverHaste(forceRecalc)
 			stacksToGenerate:=this.GetTargetStacksForFullRun() - this.leftoverHaste
-			return CEIL(stacksToGenerate / this.stackConversionRate) ;Ceiling as the feat rounds down
+			return CEIL(stacksToGenerate / this.stackConversionRate * targetMultiplier) ;Ceiling as the feat rounds down
 		}
 	}
 
@@ -624,7 +625,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 			if(activateFariUlt) ;InitMemoryReads must come after formation switch so Tatyana's effect handler is available
 				this.InitMemoryReads()
 			g_SharedData.UpdateOutbound("LoopString","Online Stack")
-			maxOnlineStackTime:=(200000*g_IBM.CounterFrequency)/gameSpeed ;Reduces the 200s to 16s @ 12.5. Factoring the CounterFrequency in here means we can avoid doing it every loop
+			maxOnlineStackTime:=(g_IBM_Settings["IBM_Online_Stack_Max_Time"]*g_IBM.CounterFrequency)/gameSpeed ;Reduces the default 200s to 16s @ 12.5. Factoring the CounterFrequency in here means we can avoid doing it every loop
 			if(g_IBM.failedConversionMode) ;In this case we're probably killing things as we've levelled champions, allow significantly more time
 				maxOnlineStackTime*=5
 			elapsedTime:=0
@@ -1307,7 +1308,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
             this.KEY_autoProgress.KeyPress()
         if ( g_SF.Memory.ReadAutoProgressToggled() != isToggled )
             this.KEY_autoProgress.KeyPress() ;Irisiri: If forceToggle is true, this will be a 2nd press without giving the game a chance to process?
-        while ( g_SF.Memory.ReadAutoProgressToggled() != isToggled AND forceState AND A_TickCount - StartTime < 1000 )
+        while ( g_SF.Memory.ReadAutoProgressToggled() != isToggled AND forceState AND A_TickCount - StartTime < g_IBM_Settings["IBM_ToggleAutoProgress_Timeout"] )
         {
             this.KEY_autoProgress.KeyPress_Bulk()
 			g_IBM.IBM_Sleep(15)

@@ -63,7 +63,7 @@
 		;Tab control
 		g_TabControlStartHeight:=buttonWidth+7
 		Gui, IBM_Home:Add, Tab3, x5 y%g_TabControlStartHeight% w%g_TabControlWidth% h%g_TabControlHeight% vModronTabControl, %g_TabList%
-		this.AddTab("Home|Game|Route|Levels")
+		this.AddTab("Home|Game|Route|Levels|Advanced")
 		this.Theme.UseThemeTitleBar("IBM_Home")
 		Gui, IBM_Home:Show, %  "x" . g_IBM_Settings.HUB.IBM_HOME_X . " y" . g_IBM_Settings.HUB.IBM_HOME_Y . " w" . g_TabControlWidth+10 . " h" . g_TabControlHeight+g_TabControlStartHeight+6  . " NA", % "Briv Master Home (Loading...)"
 
@@ -759,6 +759,24 @@
 		Gui, IBM_Home:Add, Text, x+10 h18 0x200, Minimum cards:
 		Gui, IBM_Home:Add, Edit, +%editTextColour% w15 x+3 Number Limit1 vIBM_Casino_MinCards_Base gIBM_Generic_Setting_Int
 
+		;++++++++++++++++++ADVANCED TAB++++++++++++++++++
+		Gui, IBM_Home:Tab, Advanced
+		Gui, IBM_Home:Font, w700
+		Gui, IBM_Home:Add, Groupbox, Section xm+2 ym+48 w%groupWidth% h150 vIBM_Group_Advanced, Advanced
+		Gui, IBM_Home:Font, w400
+		Gui, IBM_Home:Add, Text, xs+10 ys+20 h18 0x200, Casino timeout base ticks:
+		Gui, IBM_Home:Add, Edit, +%editTextColour% w90 x+3 Number Limit9 vIBM_Casino_Timeout_Base gIBM_Generic_Setting_Int
+		this.AddToolTip("IBM_Casino_Timeout_Base", "Overrides the Ellywick Casino timeout base ticks. Increase this if the casino loop is expiring before the hand resolves.")
+		Gui, IBM_Home:Add, Text, xs+10 y+10 h18 0x200, Toggle auto progress timeout ticks:
+		Gui, IBM_Home:Add, Edit, +%editTextColour% w70 x+3 Number Limit6 vIBM_ToggleAutoProgress_Timeout gIBM_Generic_Setting_Int
+		this.AddToolTip("IBM_ToggleAutoProgress_Timeout", "Maximum number of ticks to wait when toggling auto-progress. Increase this if auto progress isn't toggling consistently.")
+		Gui, IBM_Home:Add, Text, xs+10 y+10 h18 0x200, Max online SB stack time ticks:
+		Gui, IBM_Home:Add, Edit, +%editTextColour% w90 x+3 Number Limit9 vIBM_Online_Stack_Max_Time gIBM_Generic_Setting_Int
+		this.AddToolTip("IBM_Online_Stack_Max_Time", "Maximum number of ticks to wait for online Steelbones stacks. Increase this if you receive errors stating online stacking took too long.")
+		Gui, IBM_Home:Add, Text, xs+10 y+10 h18 0x200, SB stack buffer multiplier:
+		Gui, IBM_Home:Add, Edit, +%editTextColour% w55 x+3 Number Limit5 vIBM_GetTargetStacks_Multiplier gIBM_Generic_Setting_Float_Round2
+		this.AddToolTip("IBM_GetTargetStacks_Multiplier", "Safety buffer multiplier applied when calculating the target Steelbones stacks for the next run. Up to two decimal places.")
+
 		;++++++++++++++++++LEVELS TAB++++++++++++++++++
 		Gui, IBM_Home:Tab, Levels
 		;Levelling Options
@@ -942,6 +960,11 @@
 		GuiControl, IBM_Home:, IBM_Casino_Target_Base, % g_IBM_Settings.IBM_Casino_Target_Base
 		GuiControl, IBM_Home:, IBM_Casino_Redraws_Base, % g_IBM_Settings.IBM_Casino_Redraws_Base
 		GuiControl, IBM_Home:, IBM_Casino_MinCards_Base, % g_IBM_Settings.IBM_Casino_MinCards_Base
+		;Advanced
+		GuiControl, IBM_Home:, IBM_Casino_Timeout_Base, % g_IBM_Settings.IBM_Casino_Timeout_Base
+		GuiControl, IBM_Home:, IBM_ToggleAutoProgress_Timeout, % g_IBM_Settings.IBM_ToggleAutoProgress_Timeout
+		GuiControl, IBM_Home:, IBM_GetTargetStacks_Multiplier, % Round(g_IBM_Settings.IBM_GetTargetStacks_Multiplier, 2)
+		GuiControl, IBM_Home:, IBM_Online_Stack_Max_Time, % g_IBM_Settings.IBM_Online_Stack_Max_Time
 
 		;BM LEVELS TAB
 
@@ -1428,6 +1451,16 @@ IBM_Generic_Setting_String() ;Generic g-label for non-hub settings that should b
 		return
 	GuiControlGet, value, , %A_GuiControl%
     g_IBM_Settings[A_GuiControl]:=value . ""
+}
+
+IBM_Generic_Setting_Float_Round2() ;Generic g-label for non-hub settings that should be forced to Float and capped at 2 decimal places
+{
+	if (g_IriBrivMaster_GUI.controlLock)
+		return
+	GuiControlGet, value, , %A_GuiControl%
+	value:=Round(value+0, 2)
+	g_IBM_Settings[A_GuiControl]:=value
+	GuiControl, IBM_Home:, %A_GuiControl%, % value
 }
 
 IBM_Generic_Hub_Setting_Int() ;Hub version

@@ -2,7 +2,7 @@
 
 class IC_BrivMaster_EllywickCasino_Class ;A class to manage the whole casino, without the use of a timer
 {
-	static TIMEOUT_BASE:=100000  ;Allow 10s at x10 speed, 8s at x12.5
+	static TIMEOUT_BASE:=g_IBM_Settings["IBM_Casino_Timeout_Base"]
 	static ULT_DELAY:=3750 ;Half of the 7500ms duration of Elly's ult, including run out time, per the CotFeywild .IsUltimateActive read TODO: This is for 5 cards (1000 start+750 per card+750 applying debuffs+2000 end), possibly should go halfway between 4 and 5?
 	
 	__New()
