@@ -248,6 +248,10 @@ class IC_BrivMaster_GemFarm_Class
 			{
 				this.EllywickCasino.lockedFrontColumnChamps:=this.levelManager.SetupFirstZoneFrontRow()
 				this.levelManager.LevelFormation("M","z1",,true,,true)
+				if (g_Heroes[139].inQ OR g_Heroes[139].inE)
+				{
+					this.RouteMaster.ToggleAutoProgress(0, false, true) ;Wait for the Casino to finish before progressing if Thellora in Q/E, otherwise we'll burn haste stacks early and run out
+				}
 				g_SharedData.UpdateOutbound("LoopString","Ellywick's Casino")
 				this.levelManager.LevelClickDamage()
 				if(this.EllywickCasino.Casino()) ;Moved this out of the IBM_EllywickCasino end logic, for non-combine unlock right away as if the zone is somehow not complete Briv won't be present to get 'free' stacks anyway | TODO: Think about ghost levelling in this case
