@@ -1,8 +1,12 @@
 class IC_BrivMaster_Heroes_Class ;A class for managing heroes. Or Champions, but that's a longer word and I am not being paid by the letter
 {
+	Static HERO_MIN:=160 ;166 heroes as of 2026-09-30
+	Static HERO_MAX:=500
+	
 	__New()
 	{
 		this.initialised:=false ;Variables need to be set here to prevent __Get() being called on them
+		this.heroCount:=0
 		this.Init()
 	}
 
@@ -40,13 +44,32 @@ class IC_BrivMaster_Heroes_Class ;A class for managing heroes. Or Champions, but
 		this.initialised:=this.GenerateHeroIDtoHeroIndexMap()
 		return this.initialised
 	}
+	
+	CheckForDataChange() ;Data pushes can change the hero collection, changing the mapping of hero ID to heroIndex. Attempting a simple check of the collection size
+	{
+		size:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes.size.Read()
+		if(size<=IC_BrivMaster_Heroes_Class.HERO_MIN OR size>=IC_BrivMaster_Heroes_Class.HERO_MAX) ;Sanity check, don't force an update if memory reads are not available
+		{
+			;g_IBM.Logger.AddMessage("CheckForDataChange() Hero collection size [" . size . "] out of bounds and current [" . this.heroCount . "]")
+			return false
+		}
+		if(size==this.heroCount)
+		{
+			;g_IBM.Logger.AddMessage("CheckForDataChange() Hero collection unchanged from [" . size . "]")
+			return false
+		}
+		this.GenerateHeroIDtoHeroIndexMap()
+		g_IBM.Logger.AddMessage("CheckForDataChange() Hero collection size changed from [" . this.heroCount . "] to [" . size . "]")
+		return true
+	}
 
 	ResetAll() ;Reset all heroes
 	{
+		refreshIndex:=this.CheckForDataChange()
 		for k,v in this
 		{
 			if k is integer ;Only call for the heroID objects. N.B. This cannot be an expression in AHK v1, i.e. 'if (k is integer)' is not valid
-				v.Reset()
+				v.Reset(refreshIndex)
 		}
 	}
 
@@ -54,12 +77,13 @@ class IC_BrivMaster_Heroes_Class ;A class for managing heroes. Or Champions, but
 	{
         this.IDToIndexMap:={}
         size:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes.size.Read()
-		if(size<=0 OR size>=500) ; Sanity check;
+		if(size<=IC_BrivMaster_Heroes_Class.HERO_MIN OR size>=IC_BrivMaster_Heroes_Class.HERO_MAX) ;Sanity check
 			return false
-        loop, %size%
+        this.heroCount:=size
+		loop, %size%
         {
             heroID:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[A_Index - 1].def.ID.Read()
-            this.IDToIndexMap[heroID] := A_Index - 1
+            this.IDToIndexMap[heroID]:=A_Index - 1
         }
 		return true
     }
@@ -241,9 +265,11 @@ class IC_BrivMaster_Hero_Class ;Represents a single hero. Can be extended for he
 	;---Levelling functions
 	;------------------------------------------------------------------------------------
 
-	Reset()
+	Reset(refreshIndex:=false)
 	{
 		this.Current:=this.Master.Clone()
+		if(refreshIndex)
+			this.HeroIndex:=this.IDToIndexMap[this.ID]
 	}
 
 	ApplyLevelSettings(levelsettings,savedFormationChamps) ;Set up this champion's levelling and formation related properties
