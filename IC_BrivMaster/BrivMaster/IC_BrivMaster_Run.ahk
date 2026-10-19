@@ -127,7 +127,7 @@ class IC_BrivMaster_GemFarm_Class
 				this.RouteMaster.ToggleAutoProgress(g_Heroes[139].inM ? 1 : 0) ;Set initial autoprogess ASAP
 				this.offRamp:=false ;TODO: There's a lot of resetting that could probably be wrapped together. Or possibly this whole block carved out
 				this.failedConversionMode:=false
-                this.levelManager.Reset()
+				this.levelManager.Reset()
                 this.RouteMaster.Reset()
 				this.EllywickCasino.Reset()
 				this.IBM_FirstZone(this.currentZone)
