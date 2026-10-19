@@ -1003,14 +1003,14 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
         ElapsedTime:=0
 		TimeOut:=5000
         g_SharedData.UpdateOutbound("LoopString","Setting stack farm formation")
-        while (!this.FormationCheckWithFari() AND ElapsedTime < TimeOut)
+        while (!g_SF.IsCurrentFormation(g_IBM.levelManager.GetFormation("W")) AND ElapsedTime < TimeOut)
         {
-			this.KEY_W.KeyPress() ;Not using _Bulk here as the swap here is a failure mode
+			this.KEY_W.KeyPress() ;Not using _Bulk as the swap here is a failure mode
             g_IBM.levelManager.LevelFormation("W", "min") ;Should this be here?
 			g_IBM.IBM_Sleep(15)
             ElapsedTime:=A_TickCount - StartTime
         }
-		if (elapsedTime >= TimeOut)
+		if (elapsedTime>=TimeOut)
 			g_IBM.Logger.AddMessage("FAIL: StackFarmSetup() did not set W formation within " . TimeOut . "ms")
     }
 
