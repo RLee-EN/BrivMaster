@@ -161,8 +161,12 @@ Class IC_IriBrivMaster_Component
 		settings.IBM_Casino_Target_Base["_DEFAULT"]:=3
 		settings.IBM_Casino_Redraws_Base["_DEFAULT"]:=1
 		settings.IBM_Casino_MinCards_Base["_DEFAULT"]:=0
+		settings.IBM_Casino_Timeout_Base["_DEFAULT"]:=100000 ;Allow 10s at x10 speed, 8s at x12.5
 		settings.IBM_Casino_Front_Row_Threshold["_DEFAULT"]:=2
 		settings.IBM_OffLine_Delay_Time["_DEFAULT"]:=15000
+		settings.IBM_ToggleAutoProgress_Timeout["_DEFAULT"]:=1000
+		settings.IBM_GetTargetStacks_Multiplier["_DEFAULT"]:=1.0
+		settings.IBM_Online_Stack_Max_Time["_DEFAULT"]:=200000
 		settings.IBM_OffLine_Sleep_Time["_DEFAULT"]:=0
 		settings.IBM_Level_Options_Mod_Key["_DEFAULT"]:="Shift"
 		settings.IBM_Level_Options_Mod_Value["_DEFAULT"]:=10
@@ -188,6 +192,7 @@ Class IC_IriBrivMaster_Component
 		settings.IBM_Allow_Modron_Buff_Off["_DEFAULT"]:=false ;Hidden setting - allows the script to be started without the modron core buff enabled, for those who want to use potions via saved familiars
 		settings.IBM_Logger_MiniLog["_DEFAULT"]:=false
 		settings.IBM_Logger_ZoneLog["_DEFAULT"]:=false
+		settings.IBM_Logger_DebugLog["_DEFAULT"]:=false
 		settings.IBM_Online_Farideh_Threshold["_DEFAULT"]:=90
 		settings.IBM_Online_Farideh_Condition["_DEFAULT"]:=1
 		settings.IBM_Scan_Codes["Esc","_DEFAULT"]:=1 ;Escape for skipping splash screen
