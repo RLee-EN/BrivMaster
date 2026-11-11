@@ -520,7 +520,7 @@ class IC_BrivMaster_GemFarm_Class
 			errorMsg.="W	Expected: 0	Saved: " . familiarCountW . "`n"
 			errorMsg.="E	Expected: 3	Saved: " . familiarCountE . " (Feat Swap)`n"
 			errorMsg.="Do you wish to continue?"
-			this.PreFlightErrorMessage("Familiars",errorMsg,32+4) ;32 is Question, 1 is Yes/No
+			this.PreFlightErrorMessage("Familiars",errorMsg,32+4) ;32 is Question, 4 is Yes/No
             IfMsgBox, No
 				return false
 		}
