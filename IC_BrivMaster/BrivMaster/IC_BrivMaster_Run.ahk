@@ -246,6 +246,7 @@ class IC_BrivMaster_GemFarm_Class
 			}
 			else ;No Thellora in M, so Casino in z1
 			{
+				this.RouteMaster.ToggleAutoProgress(0,false,true) ;Force stop
 				this.EllywickCasino.lockedFrontColumnChamps:=this.levelManager.SetupFirstZoneFrontRow()
 				this.levelManager.LevelFormation("M","z1",,true,,true)
 				g_SharedData.UpdateOutbound("LoopString","Ellywick's Casino")
