@@ -433,7 +433,7 @@
 		Gui, IBM_Home:Tab, Game
 		;Game location
 		Gui, IBM_Home:Font, w700
-		Gui, IBM_Home:Add, Groupbox, Section xm+2 ym+48 w%groupWidth% h127 vIBM_Group_Game_Location, Game Location
+		Gui, IBM_Home:Add, Groupbox, Section xm+2 ym+48 w%groupWidth% h151 vIBM_Group_Game_Location, Game Location
 		Gui, IBM_Home:Font, w400
 		Gui, IBM_Home:Add, Text, w55 xs+5 ys+20 h18 0x200, Executable:
 		editWidth:=groupWidth-255
