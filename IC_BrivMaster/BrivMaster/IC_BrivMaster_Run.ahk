@@ -244,7 +244,7 @@ class IC_BrivMaster_GemFarm_Class
 					this.EllywickCasino.UnlockHeroes()
 				this.levelManager.LevelFormation("Q","min",500) ;Apply min so BBEG->Dyna swap, Tatyana->Hew swap etc happens. Trying 500ms to allow for Hew modifier key levelling to happen
 			}
-			else ;No Thellora, so Casino in z1
+			else ;No Thellora in M, so Casino in z1
 			{
 				this.EllywickCasino.lockedFrontColumnChamps:=this.levelManager.SetupFirstZoneFrontRow()
 				this.levelManager.LevelFormation("M","z1",,true,,true)
@@ -409,10 +409,10 @@ class IC_BrivMaster_GemFarm_Class
 	{
 		targetTime:=baseTime+this.CounterFrequency*offsetMilliseconds
 		DllCall("QueryPerformanceCounter", "Int64*", currentTime)
-		while (currentTime < targetTime)
+		while (currentTime<targetTime)
 		{
 			targetTick:=(targetTime - currentTime)//this.CounterFrequency
-			if (targetTick <= 5) ;With <5ms to go make individual 1ms calls
+			if (targetTick<=5) ;With <5ms to go make individual 1ms calls
 				tick:=1
 			else
 				tick:=Min(15,targetTick) ;Make calls of no more than 15ms to ensure timers run etc

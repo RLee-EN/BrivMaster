@@ -67,7 +67,9 @@
 		this.Theme.UseThemeTitleBar("IBM_Home")
 		Gui, IBM_Home:Show, %  "x" . g_IBM_Settings.HUB.IBM_HOME_X . " y" . g_IBM_Settings.HUB.IBM_HOME_Y . " w" . g_TabControlWidth+10 . " h" . g_TabControlHeight+g_TabControlStartHeight+6  . " NA", % "Briv Master Home (Loading...)"
 
+		;++++++++++++++++++++++++++++++++++++++++++++
 		;++++++++++++++++++HOME TAB++++++++++++++++++
+		;++++++++++++++++++++++++++++++++++++++++++++
 		Gui, IBM_Home:Tab, Home
 		;Run control
 		Gui, IBM_Home:Font, w700
@@ -425,7 +427,9 @@
 		Gui, IBM_Home:Add, Edit, +%editTextColour%  w12 x+0 Number Limit1 vIBM_NonGemFarm_Elly_Max_5
 		Gui, IBM_Home:Add, Text, x+15 yp-1 w%textWidth% r2 Right vIBM_NonGemFarm_Elly_Status
 		
+		;++++++++++++++++++++++++++++++++++++++++++++
 		;++++++++++++++++++GAME TAB++++++++++++++++++
+		;++++++++++++++++++++++++++++++++++++++++++++
 		Gui, IBM_Home:Tab, Game
 		;Game location
 		Gui, IBM_Home:Font, w700
@@ -625,7 +629,9 @@
 		Gui, IBM_Home:Add, CheckBox, xs+10 y+4 h18 vIBM_Version_Check gIBM_Generic_Hub_Setting_Int,On load
 		this.AddToolTip("IBM_Version_Check", "Select to automatically check for updates when Briv Master Home starts")
 
-		;++++++++++++++++++ROUTE TAB++++++++++++++++++
+		;++++++++++++++++++++++++++++++++++++++++++++
+		;++++++++++++++++++ROUTE TAB+++++++++++++++++
+		;++++++++++++++++++++++++++++++++++++++++++++
 		Gui, IBM_Home:Tab, Route
 		;Combine
 		Gui, IBM_Home:Font, w700
@@ -759,7 +765,9 @@
 		Gui, IBM_Home:Add, Text, x+10 h18 0x200, Minimum cards:
 		Gui, IBM_Home:Add, Edit, +%editTextColour% w15 x+3 Number Limit1 vIBM_Casino_MinCards_Base gIBM_Generic_Setting_Int
 
-		;++++++++++++++++++LEVELS TAB++++++++++++++++++
+		;++++++++++++++++++++++++++++++++++++++++++++
+		;+++++++++++++++++LEVELS TAB+++++++++++++++++
+		;++++++++++++++++++++++++++++++++++++++++++++
 		Gui, IBM_Home:Tab, Levels
 		;Levelling Options
 		Gui, IBM_Home:Font, w700

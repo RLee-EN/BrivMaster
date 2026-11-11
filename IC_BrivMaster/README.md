@@ -361,7 +361,7 @@ Safety Factor: When using Briv Level Boost, this is how many more times expected
 Dynamic Diana: Diana can give excess chests after the daily reset. This option will raise her level to 200 for Electrum Chest Scavenger from 3 minutes before the daily reset to 30 minutes after. Her level in the main options should be left at 100.
 	
 > Author's Note: This is attempting to profit from a bug, but perhaps if enough people do so it might get fixed...
-	
+
 Recovery Levelling: With this option selected, if Briv does not have enough stacks to jump but the minimum stack zone has yet to be reached, champions will be levelled to their last update when they first reach a boss zone. This can aid killing armoured bosses, but will raise the minimum zone required to gain online stacks.
 
 > Author's Note: This was a feature carried over from BrivGemFarmLevelUp, and previously always on, but since it's often undesiable it has been made an option. It will be considered for future removal. Generally if you can clear the armoured bosses prior to the minimum stack zone with standard levels this only hurts you.

@@ -852,7 +852,7 @@ class IC_BrivMaster_MemoryFunctions_Class
         this.GameSettings:=new IC_BrivMaster_GameSettings_Class(currentPointers.GameSettings.moduleAddress, currentPointers.GameSettings.staticOffset, currentPointers.GameSettings.moduleOffset)
         this.EngineSettings:=new IC_BrivMaster_EngineSettings_Class(currentPointers.EngineSettings.moduleAddress, currentPointers.EngineSettings.staticOffset, currentPointers.EngineSettings.moduleOffset)
 		this.FavoriteFormations:={} ;Irisiri - used for formation caching by the looks of it
-		this.LastFormationSavesVersion:={} ;Irisiri- used for formation caching by the looks of it
+		this.LastFormationSavesVersion:={} ;Irisiri - used for formation caching by the looks of it
 		this.SlotFormations:={} ;Irisiri - used for formation caching by the looks of it
     }
 
