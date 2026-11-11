@@ -167,9 +167,11 @@ Launch Command: The command used to launch the game. For non-EGS setups this wil
 
 > Author's Note: For the CNE client, your account details will be in this field, so do not share unredacted screenshots of it.
 	
-Hide launcher: Selecting this option will hide the window created by invoking the Launch Command. Use this only for 3rd party EGS launchers that might otherwise pop up a command window. Using it with the game directly will cause it to fail to start.
-	
-EGS & Copy from IC: Described in the introduction to this group.
+Hide launcher: Selecting these options will hide the window created by invoking the Launch Command. Use this only for 3rd party EGS launchers that might otherwise pop up a command window. Using it with the game directly will cause it to fail to start.
+- Manual start: Applies when launching the game via the game icon in Briv Master home
+- Whilst farming: Applies when Briv Master launches the game whilst running the gem Farm
+
+> Author's Note: These are separate as having the launcher pop up on manual launch might provide useful insight on things like login issues, and does not provide feedback if the launcher portion of start-up is taking a long time.
 
 ### Window Options  
 These options control the appearance of the farm script window.

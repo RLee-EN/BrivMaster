@@ -63,7 +63,7 @@ Launch_Clicked()
 	programLoc:=g_IBM_Settings.IBM_Game_Launch
     try
     {
-		if (g_IBM_Settings.IBM_Game_Hide_Launcher)
+		if (g_IBM_Settings.HUB.IBM_Game_Hide_Launcher_Startup)
 			Run, %programLoc%,,Hide, openPID
 		else
 			Run, %programLoc%,,,openPID

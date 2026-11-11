@@ -439,8 +439,6 @@
 		editWidth:=groupWidth-255
 		Gui, IBM_Home:Add, Edit, +%editTextColour% w%editWidth% x+5 vIBM_Game_Exe gIBM_Game_Location_Settings
 		this.AddToolTip("IBM_Game_Exe", "The game executable file name, normally IdleDragons.exe")
-		Gui, IBM_Home:Add, CheckBox, x+10 h18 0x200 vIBM_Game_Hide_Launcher gIBM_Game_Location_Settings, Hide launcher
-		this.AddToolTip("IBM_Game_Hide_Launcher", "Select this option to hide the window created by the launch command. Useful when using an alternative launcher and do not want to see the window it creates. Do not use when launching the game directly")
 		buttonX:=groupWidth-83
 		Gui, IBM_Home:Add, Button, xs+%buttonX% yp+0 w75 vIBM_Game_Copy_From_Game gIBM_Game_Copy_From_Game, Copy from IC
 		editWidth:=groupWidth-74
@@ -450,6 +448,19 @@
 		Gui, IBM_Home:Add, Text, w55 r2 xs+5 y+5 h18, Launch Command:
 		Gui, IBM_Home:Add, Edit, +%editTextColour% w40 x+5 w%editWidth% r2 vIBM_Game_Launch gIBM_Game_Location_Settings
 		this.AddToolTip("IBM_Game_Launch", "The launch command for the game. This is seperated to allow the use of different launchers")
+		
+		if(this.Wide)
+			Gui, IBM_Home:Add, Text, x+20 h18 0x200, Hide launcher:
+		else
+			Gui, IBM_Home:Add, Text, xs+5 y+5 h18 0x200, Hide launcher:
+		Gui, IBM_Home:Add, CheckBox, x+3 h18 0x200 vIBM_Game_Hide_Launcher_Startup gIBM_Generic_Hub_Setting_Int, Manual start
+		Gui, IBM_Home:Add, CheckBox, x+10 h18 0x200 vIBM_Game_Hide_Launcher gIBM_Generic_Setting_Int, Whilst farming
+		this.AddToolTip("IBM_Game_Hide_Launcher_Startup", "Select this option to hide the window created by the launch command when using the button above to start the game manually.`nUseful when using an alternative launcher and do not want to see the window it creates. Do not use when launching the game directly")
+		this.AddToolTip("IBM_Game_Hide_Launcher", "Select this option to hide the window created by the launch command when the game is started automatically by the script.`nUseful when using an alternative launcher and do not want to see the window it creates. Do not use when launching the game directly")
+		
+		GuiControlGet, lastItemPos, IBM_Home:Pos,IBM_Game_Hide_Launcher ;Used for setting the next box
+		groupEnd:=lastItemPosY+lastItemPosH-46 ;The 48 hard coded for xm, +2 for spacing
+		GuiControl, IBM_Home:Move, IBM_Group_Game_Location, h%groupEnd%
 		GuiControlGet, groupPos, IBM_Home:Pos,IBM_Group_Game_Location ;Used for setting the next box
 		nextGroupStart:=groupPosY+groupPosH+1
 		;Window settings
@@ -898,6 +909,7 @@
 		GuiControl, IBM_Home:, IBM_Game_Path, % g_IBM_Settings.IBM_Game_Path
 		GuiControl, IBM_Home:, IBM_Game_Launch, % g_IBM_Settings.IBM_Game_Launch
 		GuiControl, IBM_Home:, IBM_Game_Hide_Launcher, % g_IBM_Settings.IBM_Game_Hide_Launcher
+		GuiControl, IBM_Home:, IBM_Game_Hide_Launcher_Startup, % g_IBM_Settings.HUB.IBM_Game_Hide_Launcher_Startup
 		;Window
 		GuiControl, IBM_Home:, IBM_Window_X, % g_IBM_Settings.IBM_Window_X
 		GuiControl, IBM_Home:, IBM_Window_Y, % g_IBM_Settings.IBM_Window_Y
@@ -1762,8 +1774,6 @@ IBM_Game_Location_Settings() ;TODO: Should be able to use the generic Int for th
 	g_IriBrivMaster.UpdateSetting("IBM_Game_Path",value)
 	GuiControlGet, value,, IBM_Game_Launch
 	g_IriBrivMaster.UpdateSetting("IBM_Game_Launch",value)
-	GuiControlGet, value,, IBM_Game_Hide_Launcher
-	g_IriBrivMaster.UpdateSetting("IBM_Game_Hide_Launcher",value+0)
 }
 
 IBM_Game_Settings_Profile()
