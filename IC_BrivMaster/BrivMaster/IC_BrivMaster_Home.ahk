@@ -105,6 +105,7 @@ Class IC_IriBrivMaster_Component
         g_Heroes:=new IC_BrivMaster_Heroes_Class()
 		this.LoadSettings()
 		g_SF:=New IC_BrivMaster_SharedFunctions_Class
+		this.PlatformTable:=this.GetPlatformTable() ;Required for the GUI
 		g_IriBrivMaster_GUI.Init() ;Must follow IBM memory manager being set up in g_SF
 		g_IriBrivMaster_GUI.UpdateGUISettings()
 		this.ChestSnatcher:=New IC_IriBrivMaster_ChestSnatcher_Class()
@@ -243,6 +244,7 @@ Class IC_IriBrivMaster_Component
         settings.HUB.IBM_Window_Wide["_DEFAULT"]:=false
 		settings.HUB.IBM_HOME_X["_DEFAULT"]:=0
 		settings.HUB.IBM_HOME_Y["_DEFAULT"]:=0
+		settings.HUB.IBM_Game_Platform_ID["_DEFAULT"]:=11 ;Defaults to Steam
 		return settings
     }
 
@@ -1188,22 +1190,42 @@ Class IC_IriBrivMaster_Component
 			return "<Unable to read>"
 	}
 
+	GetPlatformTable()
+	{
+		platforms:=[]
+		platforms.Push({ID:11,Name:"Steam"})
+		platforms.Push({ID:18,Name:"CNE"})
+		platforms.Push({ID:21,Name:"EGS"})
+		return platforms
+	}
+	
+	GetPlatformIndexByID(platformID)
+	{
+		for i,platform in this.PlatformTable
+		{
+			if(platform.ID==platformID)
+				return i
+		}
+	}
+	
+	GetPlatformDropdownString()
+	{
+		optionString:=""
+		for i,platform in this.PlatformTable
+		{
+			optionString.=platform.Name . " (" . platform.ID . ")|" . (platform.ID==g_IBM_Settings.HUB["IBM_Game_Platform_ID"] ? "|":"")
+		}
+		return optionString
+	}
+
 	GetPlatform(platformID)
 	{
-		switch platformID
+		for i,platform in this.PlatformTable
 		{
-			case 5: return "Kongregate (" . platformID . ")"
-			case 6: return "Armor Games (" . platformID . ")"
-			case 11: return "Steam (" . platformID . ")"
-			case 13: return "Servers (" . platformID . ")"
-			case 14: return "Servers (" . platformID . ")"
-			case 16: return "Sony (" . platformID . ")"
-			case 17: return "Xbox (" . platformID . ")"
-			case 18: return "CNE Games (" . platformID . ") - treated as Steam (11)"
-			case 20: return "Kartridge (" . platformID . ")"
-			case 21: return "EGS (" . platformID . ")" ;Note this is the full 'Epic Games Store' in the client
-			Default: return "UNKNOWN (" . platformID . ")"
+			if(platform.ID==platformID)
+				return platform.Name . " (" . platform.ID . ")"
 		}
+		return "UNKNOWN (" . platformID . ")"
 	}
 
 	GetPlayServerFriendly() ;Finds the ps19.idlechampions.com portion, or returns a descriptive error
@@ -1259,20 +1281,15 @@ Class IC_IriBrivMaster_Component
 		GuiControl, IBM_Home:, IBM_Offsets_Text_Imports_Current,% "Current: " . currentImports
 		GuiControl, IBM_Home:+%colour%, IBM_Offsets_Text_Imports_Current%index%
 		platformID:=g_SF.Memory.ReadPlatform()
-		if(!platformID)
+		if(platformID AND platformID!=g_IBM_Settings.HUB["IBM_Game_Platform_ID"])
 		{
-			prompt:="Briv Master was unable to read your platform ID from the game. Please enter one of the following:"
-			prompt.="`nSteam or CNE Standalone: 11"
-			prompt.="`nEpic Games Store: 21"
-			InputBox, platformID , Platform Selection, %prompt%,,,,,,,, 11
-			platformID:=Trim(platformID)
-			if(ErrorLevel==1 OR (platformID!=11 AND platformID!=21)) ;ErrorLevel of 1 means cancel was pressed
-				return
+			prompt:="The configured platform: " . this.GetPlatform(g_IBM_Settings.HUB["IBM_Game_Platform_ID"]) . " does not match the one read from memory: " . this.GetPlatform(platformID)
+			prompt.="`nPlease correct the platform selection and try again"
+			Msgbox 48, Briv Master, % prompt ;48 is excamation, +0 for just OK
+			return
 		}
-		GuiControl, IBM_Home:, IBM_Offsets_Text_Platform, % "Platform: " . this.GetPlatform(platformID)
-		if(platformID==18) ;CNE client should be treated as Steam
-			platformID:=11
-		remoteURL:=g_IBM_Settings.HUB.IBM_Offsets_URL . "IC_Offsets_Header_P" . platformID . ".csv"
+		GuiControl, IBM_Home:, IBM_Offsets_Text_Platform, % "Platform: " . this.GetPlatform(g_IBM_Settings.HUB["IBM_Game_Platform_ID"])
+		remoteURL:=g_IBM_Settings.HUB.IBM_Offsets_URL . "IC_Offsets_Header_P" . (g_IBM_Settings.HUB["IBM_Game_Platform_ID"]==18 ? 11 : g_IBM_Settings.HUB["IBM_Game_Platform_ID"]) . ".csv" ;Overide CNE client (18) to Steam (11)
 		this.BasicServerCaller:=new IBM_ServerCall_Class() ;For basic server calls when version checking only - we won't be attached to the farm script / game at start up
 		offsetHeader:=this.BasicServerCaller.BasicServerCallRaw(remoteURL) ;CSV: Import version, import revision, pointer version, pointer revision
 		splitCSV:=StrSplit(offsetHeader,",")
@@ -1318,20 +1335,15 @@ Class IC_IriBrivMaster_Component
 		GuiControl, IBM_Home:, IBM_Offsets_Text_Imports_Current,% "Current: " . currentImports
 		GuiControl, IBM_Home:+%colour%, IBM_Offsets_Text_Imports_Current%index%
 		platformID:=g_SF.Memory.ReadPlatform()
-		if(!platformID)
+		if(platformID AND platformID!=g_IBM_Settings.HUB["IBM_Game_Platform_ID"])
 		{
-			prompt:="Briv Master was unable to read your platform ID from the game. Please enter one of the following:"
-			prompt.="`nSteam: 11"
-			prompt.="`nEpic Games Store: 21"
-			InputBox, platformID , Platform Selection, %prompt%,,,,,,,, 11
-			platformID:=Trim(platformID)
-			if(ErrorLevel==1 OR (platformID!=11 AND platformID!=21)) ;ErrorLevel of 1 means cancel was pressed
-				return
+			prompt:="The configured platform: " . this.GetPlatform(g_IBM_Settings.HUB["IBM_Game_Platform_ID"]) . " does not match the one read from memory: " . this.GetPlatform(platformID)
+			prompt.="`nPlease correct the platform selection and try again"
+			Msgbox 48, Briv Master, % prompt ;48 is excamation, +0 for just OK
+			return
 		}
-		GuiControl, IBM_Home:, IBM_Offsets_Text_Platform, % "Platform: " . this.GetPlatform(platformID)
-		if (platformID==18) ;CNE client should be treated as Steam
-			platformID:=11
-		remoteURL:=g_IBM_Settings.HUB.IBM_Offsets_URL . "IC_Offsets_Header_P" . platformID . ".csv"
+		GuiControl, IBM_Home:, IBM_Offsets_Text_Platform, % "Platform: " . this.GetPlatform(g_IBM_Settings.HUB["IBM_Game_Platform_ID"])
+		remoteURL:=g_IBM_Settings.HUB.IBM_Offsets_URL . "IC_Offsets_Header_P" . (g_IBM_Settings.HUB["IBM_Game_Platform_ID"]==18 ? 11 : g_IBM_Settings.HUB["IBM_Game_Platform_ID"]) . ".csv" ;Overide CNE client (18) to Steam (11)
 		this.BasicServerCaller:=new IBM_ServerCall_Class() ;For basic server calls when version checking only - we won't be attached to the farm script / game at start up
 		offsetHeader:=this.BasicServerCaller.BasicServerCallRaw(remoteURL) ;CSV: Import version, import revision, pointer version, pointer revision
 		splitCSV:=StrSplit(offsetHeader,",")
@@ -1354,10 +1366,11 @@ Class IC_IriBrivMaster_Component
 			prompt:="Confirm download of the following:"
 			prompt.=g_IBM_Settings.HUB.IBM_Offsets_Lock_Pointers ? "`nPointers preserved" : "`nPointers: " . splitCSV[3] . " " . splitCSV[4]
 			prompt.="`nImports: " . splitCSV[1] . " " . splitCSV[2]
+			prompt.="`nFor platform: " . (g_IBM_Settings.HUB["IBM_Game_Platform_ID"]==18 ? this.GetPlatform(g_IBM_Settings.HUB["IBM_Game_Platform_ID"]) . " treated as " . this.GetPlatform(11) : this.GetPlatform(g_IBM_Settings.HUB["IBM_Game_Platform_ID"]))
 			Msgbox 36, Briv Master, %prompt% ;32 is question, 4 is Yes/No
 			ifMsgBox Yes
 			{
-				remoteURL:=g_IBM_Settings.HUB.IBM_Offsets_URL . "IC_Offsets_Data_P" . platformID . ".zlib"
+				remoteURL:=g_IBM_Settings.HUB.IBM_Offsets_URL . "IC_Offsets_Data_P" . (g_IBM_Settings.HUB["IBM_Game_Platform_ID"]==18 ? 11 : g_IBM_Settings.HUB["IBM_Game_Platform_ID"]) . ".zlib"
 				offsetZlib:=this.BasicServerCaller.BasicServerCallRaw(remoteURL) ;Binary data
 				if(offsetZlib)
 				{

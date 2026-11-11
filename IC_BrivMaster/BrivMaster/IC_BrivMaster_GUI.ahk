@@ -449,6 +449,9 @@
 		Gui, IBM_Home:Add, Edit, +%editTextColour% w40 x+5 w%editWidth% r2 vIBM_Game_Launch gIBM_Game_Location_Settings
 		this.AddToolTip("IBM_Game_Launch", "The launch command for the game. This is seperated to allow the use of different launchers")
 		
+		Gui, IBM_Home:Add, Text, xs+5 y+5 w55 h18 0x200, Platform:
+		Gui, IBM_Home:Add, DropDownList, w80 x+5 AltSubmit vIBM_Game_Platform_ID gIBM_Game_Platform_ID, % g_IriBrivMaster.GetPlatformDropdownString()
+		
 		if(this.Wide)
 			Gui, IBM_Home:Add, Text, x+20 h18 0x200, Hide launcher:
 		else
@@ -693,6 +696,7 @@
 			Gui, IBM_Home:Add, Button, w60 xs+256 yp+0 h22 vIBM_Route_Import_Button gIBM_Route_Import_Button, Import
 			Gui, IBM_Home:Add, Button, w60 x+10 h22 vIBM_Route_Export_Button gIBM_Route_Export_Button, Export
 		}
+		
 		this.AddToolTip("IBM_Route_BrivJump_Q", "The number of additional zones Briv jumps using the Q formation")
 		this.AddToolTip("IBM_Route_BrivJump_E", "The number of additional zones Briv jumps using the E formation when feat swapping. Ignored if Briv is not saved in E")
 		this.AddToolTip("IBM_Route_BrivJump_M", "The number of additional zones Briv jumps using the M (Modron) formation when feat swapping. Used when combining to determine the initial jump")
@@ -918,6 +922,8 @@
 		GuiControl, IBM_Home:, IBM_Game_Launch, % g_IBM_Settings.IBM_Game_Launch
 		GuiControl, IBM_Home:, IBM_Game_Hide_Launcher, % g_IBM_Settings.IBM_Game_Hide_Launcher
 		GuiControl, IBM_Home:, IBM_Game_Hide_Launcher_Startup, % g_IBM_Settings.HUB.IBM_Game_Hide_Launcher_Startup
+		GuiControl, IBM_Home:Choose,IBM_Game_Platform_ID, % g_IriBrivMaster.GetPlatformIndexByID(g_IBM_Settings.HUB.IBM_Game_Platform_ID)
+		
 		;Window
 		GuiControl, IBM_Home:, IBM_Window_X, % g_IBM_Settings.IBM_Window_X
 		GuiControl, IBM_Home:, IBM_Window_Y, % g_IBM_Settings.IBM_Window_Y
@@ -1504,6 +1510,12 @@ DoubleClickHandler()
 
 ;Specific g-label handlers
 
+IBM_Game_Platform_ID() ;Translate the AltSubmit index to a platform ID
+{
+	GuiControlGet, value, , IBM_Game_Platform_ID
+    g_IBM_Settings.HUB["IBM_Game_Platform_ID"]:=g_IriBrivMaster.PlatformTable[value].ID
+}
+
 IBM_Theme_Manager_Load_Light()
 {
 	g_IriBrivMaster_GUI.LoadStockTheme("Light")
@@ -1761,7 +1773,6 @@ IBM_Game_Copy_From_Game() ;Copy game location settings from the running game. No
 	if(hWnd) ;A game window exists TODO: We need to make more effort to set up and check memory reads here
 	{
 		location:=IBM_Game_Copy_From_Game_Location_Helper(useExe) . "\" ;Trailing \ is removed
-		if (g_SF.Memory.ReadPlatform()==21) ;21 is the EGS platform code
 		{
 			Msgbox 36, Briv Master, Use standard Epic Games Store Launcher?`nSelect No for Legendary or Rare ;32 is question, 4 is Yes/No
 			IfMsgBox Yes
@@ -1782,6 +1793,7 @@ IBM_Game_Copy_From_Game() ;Copy game location settings from the running game. No
 		GuiControl, IBM_Home:, IBM_Game_Exe, % useExe
 		GuiControl, IBM_Home:, IBM_Game_Path, % location
 		GuiControl, IBM_Home:, IBM_Game_Launch, % launch
+		GuiControl, IBM_Home:Choose,IBM_Game_Platform_ID, % g_IriBrivMaster.GetPlatformIndexByID(platformID)
 		IBM_Game_Location_Settings()
 	}
 	else
