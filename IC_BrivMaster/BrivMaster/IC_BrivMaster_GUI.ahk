@@ -1779,6 +1779,8 @@ IBM_Game_Copy_From_Game() ;Copy game location settings from the running game. No
 	if(hWnd) ;A game window exists TODO: We need to make more effort to set up and check memory reads here
 	{
 		location:=IBM_Game_Copy_From_Game_Location_Helper(useExe) . "\" ;Trailing \ is removed
+		platformID:=g_SF.Memory.ReadPlatform()
+		if (platformID==21) ;21 is the EGS platform code
 		{
 			Msgbox 36, Briv Master, Use standard Epic Games Store Launcher?`nSelect No for Legendary or Rare ;32 is question, 4 is Yes/No
 			IfMsgBox Yes

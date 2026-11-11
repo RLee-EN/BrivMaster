@@ -166,6 +166,8 @@ Location: The game install location. This must include the trailing \, e.g. C:\I
 Launch Command: The command used to launch the game. For non-EGS setups this will just be the Executable and Location fields combined, however for EGS it will either be the EGS URI for the game, or if using an alternative to the EGS Launcher the appropriate command will need to be added here.
 
 > Author's Note: For the CNE client, your account details will be in this field, so do not share unredacted screenshots of it.
+
+Platform: The game platform you are playing on. Used primarily so that that Offsets can be checked whilst the game is not running (see the Offsets section below).
 	
 Hide launcher: Selecting these options will hide the window created by invoking the Launch Command. Use this only for 3rd party EGS launchers that might otherwise pop up a command window. Using it with the game directly will cause it to fail to start.
 - Manual start: Applies when launching the game via the game icon in Briv Master home
