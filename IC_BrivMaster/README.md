@@ -354,9 +354,7 @@ Modifier key for x10/25: Modifier key levelling allows for champions to be level
 	
 > Author's Note: Only one value can be used at once (i.e. you can have x100 and x25, or x100 and x10, not x100, x25 and x10. This is as currently there is no particular need for it the capability to do so.
 	
-Briv Level Boost: When online stacking this option will dynamically level Briv based on the stacking zone; the intent of this feature is to allow Briv to be set to level 200 (the first multiple of 100 after he gets his farming-relevant Metalborn upgrade) to minimise the amount of levelling performed, but to also allow him to survive when stacking on higher zones.
 	
-Safety Factor: When using Briv Level Boost, this is how many more times expected incoming damage from a full zone of 100 enemies he should have in health. This value depends on how long stacking takes, as mobs will gain more enrage stacks the longer it takes. For a faster stack (up to 5s) the default of 8 is appropriate. Slower stacks may require more to be reliable.
 	
 Dynamic Diana: Diana can give excess chests after the daily reset. This option will raise her level to 200 for Electrum Chest Scavenger from 3 minutes before the daily reset to 30 minutes after. Her level in the main options should be left at 100.
 	
