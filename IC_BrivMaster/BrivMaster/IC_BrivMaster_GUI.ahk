@@ -788,12 +788,7 @@
 		this.AddToolTip("IBM_Level_Options_Ghost", "During the Casino, level champions that are not part of the formation so long as they will not be placed, either due to all slots being full or the formation being under attack. This option makes it more likely all speed effects will be ready for the first normal zone. Only applied when Thellora is in the M formation")
 		Gui, IBM_Home:Add, CheckBox, x+5 h18 0x200 vIBM_Level_Diana_Cheese gIBM_Generic_Setting_Int, Dynamic Diana
 		this.AddToolTip("IBM_Level_Diana_Cheese", "Diana can give excess chests after the daily reset. This option will raise her level to 200 for Electrum Chest Scavenger from 3 minutes before the daily reset to 30 minutes after. Her level in the main options should be left at 100")
-		Gui, IBM_Home:Add, CheckBox, xs+10 y+8 h18 0x200 vIBM_Level_Options_BrivBoost_Use gIBM_Level_Options_BrivBoost_Use, Briv Level Boost
-		this.AddToolTip("IBM_Level_Options_BrivBoost_Use", "When enabled will increase Briv's level during online stacking. Use when Briv's normal level is insufficent for later stack zones")
-		Gui, IBM_Home:Add, Text, x+15 h18 0x200, Safety Factor
-		Gui, IBM_Home:Add, Edit, +%editTextColour% w20 x+1 Number Limit2 vIBM_LevelManager_Boost_Multi gIBM_Generic_Setting_Int
-		this.AddToolTip("IBM_LevelManager_Boost_Multi", "This is how many times greater Briv's HP should be than the incoming damage of 100 enemies. Useful range 8 (fast stacking) to 12 (slower stacking)")
-		Gui, IBM_Home:Add, CheckBox, x+15 h18 0x200 vIBM_Level_Recovery_Softcap gIBM_Generic_Setting_Int, Recovery Levelling
+		Gui, IBM_Home:Add, CheckBox, xs+10 y+8 h18 0x200 vIBM_Level_Recovery_Softcap gIBM_Generic_Setting_Int, Recovery Levelling
 		this.AddToolTip("IBM_Level_Recovery_Softcap", "With this option selected, champions will be levelled to their last update when reaching a boss zone in stack conversion recovery, that is when Briv has no stacks and the minimum stack zone has yet to be reached. This can aid killing armoured bosses, but will raise the minimum zone required to gain online stacks")
 		GuiControlGet, groupPos, IBM_Home:Pos,IBM_Group_Level_Options ;Used for setting the next box
 		nextGroupStart:=groupPosY+groupPosH+1
@@ -955,9 +950,6 @@
 
 		;Levelling options
 		GuiControl, IBM_Home:, IBM_LevelManager_Input_Max, % g_IBM_Settings.IBM_LevelManager_Input_Max
-		GuiControl, IBM_Home:, IBM_Level_Options_BrivBoost_Use, % g_IBM_Settings.IBM_LevelManager_Boost_Use
-		GuiControl, IBM_Home:, IBM_LevelManager_Boost_Multi, % g_IBM_Settings.IBM_LevelManager_Boost_Multi
-		IBM_Level_Options_BrivBoost_Enable(g_IBM_Settings.IBM_LevelManager_Boost_Use)
 		GuiControl, IBM_Home:, IBM_Level_Options_Suppress_Front, % g_IBM_Settings.IBM_Level_Options_Suppress_Front
 		GuiControl, IBM_Home:, IBM_Level_Options_Ghost, % g_IBM_Settings.IBM_Level_Options_Ghost
 		GuiControl, IBM_Home:ChooseString, IBM_Level_Options_Mod_Key, % g_IBM_Settings.IBM_Level_Options_Mod_Key
@@ -1940,25 +1932,6 @@ IBM_LevelManager_Input_Max()
 	if (value<2)
 		value:=2 ;Due to potential use of modifier keys this must be at least 2
 	g_IriBrivMaster.UpdateSetting("IBM_LevelManager_Input_Max",value)
-}
-
-IBM_Level_Options_BrivBoost_Use()
-{
-	GuiControlGet, value,, IBM_Level_Options_BrivBoost_Use
-	IBM_Level_Options_BrivBoost_Enable(value)
-	g_IriBrivMaster.UpdateSetting("IBM_LevelManager_Boost_Use",value)
-}
-
-IBM_Level_Options_BrivBoost_Enable(enableControl)
-{
-	if (enableControl)
-	{
-		GuiControl, IBM_Home:Enable, IBM_LevelManager_Boost_Multi
-	}
-	else
-	{
-		GuiControl, IBM_Home:Disable, IBM_LevelManager_Boost_Multi
-	}
 }
 
 IBM_Route_Import_Button() ;TODO: Provide some instructions...

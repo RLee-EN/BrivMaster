@@ -582,9 +582,6 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 				g_Heroes[33] ;Ensure the object is created at start-up
 				this.FaridehUltThreshold:=g_IBM_Settings["IBM_Online_Farideh_Threshold"]
 			}
-			this.useBrivBoost:=g_IBM_Settings["IBM_LevelManager_Boost_Use"]
-			if (this.useBrivBoost)
-				this.BrivBoost:=new IC_BrivMaster_BrivBoost_Class(g_IBM_Settings["IBM_LevelManager_Boost_Multi"])
 		}
 			
 		InitMemoryReads() ;To be extended for each activation method
@@ -831,9 +828,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 				g_IBM.Logger.AddMessage("FAIL: Online Stack Setup() did not set W formation within " . timeOut . "ms")
 				g_IBM.Logger.AddMessage("DEBUG: Fari Level=[" . g_Heroes[33].ReadLevel() . "] Formation=" . this.DEBUG_FORMATION_STRING())
 			}
-			if (this.useBrivBoost) ;Should this be moved before StackFarmSetup()? Or possibly into StartFarmSetup(this.useBrivboost) (as online only) - we want the first W press to occur before we start doing Other Stuff so the formation switch happens ASAP
-				this.BrivBoost.Apply()
-			g_IBM.levelManager.LevelFormation("W", "min") ;Ensures we're levelled, and applies any changes made based by Briv Boost if used
+			g_IBM.levelManager.LevelFormation("W", "min") ;Ensures we're levelled
 		}
 		
 		FormationCheckWithFari(faridehRequired:=false) ;True if the formations exactly match, EXCEPT for Farideh (33), who is ignored if faridehRequired=false, or if true she must be present, but in any slot. TODO: Might be best to change this to only check Briv is alone in the first column, and the required champions are present otherwise?
@@ -1547,139 +1542,4 @@ class IC_BrivMaster_Relay_SharedData_Class ;Allows for communication between thi
 		g_IBM.GameMaster.CloseIC("Relay failed to halt at platform login",true) ;Close via PID
 		this.Release()
 	}
-}
-
-class IC_BrivMaster_BrivBoost_Class ;A class used to work out what level Briv needs to be to survive on a given zone
-{
-
-	__New(targetMulti)
-	{
-		this.BuildBrivLevelTable(130,{70:95,180:165,265:290,340:510,455:890,575:1560,695:2730,815:4775,935:7800,1050:14200,1170:24000,1300:42500})
-		this.ZoneCache:={} ;Store results so we don't have to recalculate the same zone again
-		this.DPSGrowthRateCurve:=g_SF.Memory.IBM_ReadDPSGrowthCurve()
-		if (this.DPSGrowthRateCurve.Count()==0)
-		{
-			MSGBOX Briv Boost failed to read the DPS growth rate curve at adventure start. If this error persists please disable Briv Boost
-			ExitApp
-		}
-		this.areaAndCampaignMonsterDamageMultiplier:=g_SF.Memory.IBM_ReadAreaMonsterDamageMultiplier()*g_SF.Memory.IBM_ReadCampaignMonsterDamageMultiplier()
-		this.monsterBaseDPS:=g_SF.Memory.IBM_ReadMonsterBaseDPS()
-		this.maxMonsters:=100
-		this.overwhelmAdditivePenalty:=0.1
-		this.targetMultiplier:=targetMulti ;If we exactly matched Briv's HP to enemy damage he would be one-shot as soon as we reached 100 enemies attaching . This factor allows us to survive that and some enrage. 8 seems to be good for a fast stack, might need a bit more for long ones
-	}
-
-	Apply()
-	{
-		currentLevel:=g_Heroes[58].ReadLevel()
-		if (!currentLevel) ;If Briv is somehow unlevelled
-			currentLevel:=0
-		targetLevel:=this.GetBrivBoostTargetLevel(g_SF.Memory.ReadHighestZone(),currentLevel)
-		if(targetLevel > currentLevel)
-		{
-			g_IBM.levelManager.OverrideLevelByIDRaiseToMin(58, "min", targetLevel)
-			g_IBM.Logger.AddMessage("BrivBoost{C=" . currentLevel . " T=" . targetLevel . "}")
-		}
-	}
-
-	GetBrivBoostTargetLevel(zone,currentLevel) ;This is the main function to be called when using this class
-	{
-		if (!this.ZoneCache.HasKey(zone))
-			this.ZoneCache[zone]:=this.GetPreFlamesDamage(zone)
-		flamesAdjusted:=this.ZoneCache[zone]*(2**g_Heroes[83].GetNumFlamesCards())
-		brivHPMultiplier:=g_Heroes[58].ReadMaxHealth() / this.GetBrivBaseHPforLevel(currentLevel)
-		targetBrivLevel:=this.GetBrivLevelForBaseHP(flamesAdjusted/brivHPMultiplier)
-		targetBrivLevel100:=CEIL(targetBrivLevel/100)*100 ;Adjust for x100 levelling
-		return targetBrivLevel100
-	}
-
-	GetPreFlamesDamage(zone) ;This takes the curve, area/campaign, monster totals and overwhelm into account (overwhelm should not change as we only check on W). It does not take Flames into account as that will vary
-	{
-		damage:=this.GetCurveValue(zone) ;Mimcing ComputeMonsterAttackDPS
-		damage*=this.areaAndCampaignMonsterDamageMultiplier
-		damage*=this.maxMonsters ;Monster count
-		damage*=1+Max(this.maxMonsters-g_Heroes[58].ReadOverwhelm(),0)*this.overwhelmAdditivePenalty ;Overwhelm
-		damage*=this.targetMultiplier ;HP margin factor
-		return damage
-	}
-
-	GetBrivLevelForBaseHP(baseHP)
-	{
-		for level, HP in this.BrivLevelTable
-		{
-			if (HP>=baseHP)
-				return level
-			maxlevel:=level
-		}
-		return maxlevel
-	}
-
-	GetBrivBaseHPforLevel(brivLevel)
-	{
-		for level, HP in this.BrivLevelTable
-		{
-			if (level<=brivLevel)
-				lastHP:=HP
-			else
-				break
-		}
-		return lastHP
-	}
-
-	GetCurveValue(index)
-	{
-		result:=this.monsterBaseDPS
-		Loop % this.DPSGrowthRateCurve.Count()
-		{
-			i:=A_Index
-			if (this.DPSGrowthRateCurve[i].level>index)
-				break
-			value:=this.DPSGrowthRateCurve[i].value
-			num:=(i!=this.DPSGrowthRateCurve.Count AND index > this.DPSGrowthRateCurve[i+1].level) ? this.DPSGrowthRateCurve[i+1].level - this.DPSGrowthRateCurve[i].level : index - this.DPSGrowthRateCurve[i].level ;Apply for zones from either the next data point, or from the current zone
-			result*=value**num
-		}
-        return result
-	}
-
-	BuildBrivLevelTable(baseHP,upgradeList) ;Produce a table of Level:Total HP so we don't have to step through upgrades all the time TODO: This should build from Defs
-	{
-		level:=1
-		HP:=baseHP
-		this.BrivLevelTable:={}
-		this.BrivLevelTable[level]:=HP
-		for uLevel, uHP in upgradeList
-		{
-			level:=uLevel
-			HP+=uHP
-			this.BrivLevelTable[level]:=HP
-		}
-	}
-
-	;Below is code for reading upgrades for reference
-	/*
-	DEBUG_UpgradeList()
-	{
-		heroIndex:=g_SF.Memory.GetHeroHandlerIndexByChampID(58) ;Legacy, this probably becomes part of the hero object?
-		;size:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[heroIndex].upgradeHandler.upgradesByUpgradeId.size.Read()
-		size := g_SF.Memory.ReadHeroUpgradesSize(58) ;Would need replacing as removed, probably becomes part of the hero object?
-		upgradeList:={}
-		Loop, %size%
-        {
-			id:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[heroIndex].upgradeHandler.upgradesByUpgradeId["value",A_Index-1].Id.Read()
-            ;OutputDebug % "Calling g_SF.Memory.IBM_ReadHeroUpgradeRequiredLevelByIndex`n" ;Note - removed, take from IC Core if needed
-			level:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[heroIndex].upgradeHandler.upgradesByUpgradeId[id].RequiredLevel.Read()
-			effectString:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[heroIndex].upgradeHandler.upgradesByUpgradeId[id].Def.baseEffectString.Read()
-			effectSplit:=StrSplit(effectString,",")
-            if (effectSplit[1]=="health_add")
-			{
-				upgradeList[A_Index]:={}
-				upgradeList[A_Index].id:=id
-				upgradeList[A_Index].level:=level
-				upgradeList[A_Index].health:=effectSplit[2]
-			}
-        }
-        return upgradeList
-	}
-	*/
-
 }

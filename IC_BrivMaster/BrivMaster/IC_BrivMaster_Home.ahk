@@ -153,8 +153,6 @@ Class IC_IriBrivMaster_Component
 		settings.IBM_Route_Zones_Stack["_DEFAULT"]:=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 		settings.IBM_Online_Melf_Min["_DEFAULT"]:=349
 		settings.IBM_LevelManager_Input_Max["_DEFAULT"]:=5
-		settings.IBM_LevelManager_Boost_Use["_DEFAULT"]:=false
-		settings.IBM_LevelManager_Boost_Multi["_DEFAULT"]:=8
 		settings.IBM_Route_BrivJump_Q["_DEFAULT"]:=4
 		settings.IBM_Route_BrivJump_E["_DEFAULT"]:=0
 		settings.IBM_Route_BrivJump_M["_DEFAULT"]:=4
