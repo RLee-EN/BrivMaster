@@ -245,6 +245,7 @@ Class IC_IriBrivMaster_Component
 		settings.HUB.IBM_HOME_X["_DEFAULT"]:=0
 		settings.HUB.IBM_HOME_Y["_DEFAULT"]:=0
 		settings.HUB.IBM_Game_Platform_ID["_DEFAULT"]:=11 ;Defaults to Steam
+		settings.HUB.IBM_Game_Hide_Launcher_Startup["_DEFAULT"]:=false 
 		return settings
     }
 
