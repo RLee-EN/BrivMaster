@@ -1075,7 +1075,10 @@ Class IC_IriBrivMaster_Component
         Loop 5
         {
             GuiControlGet, cap, IBM_Home:, IBM_NonGemFarm_Elly_%capType%_%A_Index% ;Eg IBM_NonGemFarm_Elly_Min_1
-            cards.Push(cap)
+            if cap is integer
+				cards.Push(cap)
+			else
+				cards.Push(0) ;Treat blank as zero
         }
         return cards
     }

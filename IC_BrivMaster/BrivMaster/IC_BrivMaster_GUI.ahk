@@ -1333,9 +1333,15 @@
 		loop, 5
 		{
 			GuiControlGet, value,, IBM_NonGemFarm_Elly_Min_%A_Index%
-			cardOptions.Push(value+0)
+			if value is integer
+				cardOptions.Push(value+0)
+			else
+				cardOptions.Push(0)
 			GuiControlGet, value,, IBM_NonGemFarm_Elly_Max_%A_Index%
-			cardOptions.Push(value+0)
+			if value is integer
+				cardOptions.Push(value+0)
+			else
+				cardOptions.Push(0)
 		}
 		return cardOptions
 	}
