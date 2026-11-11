@@ -361,9 +361,11 @@ Max sequential keys: The maximum number of levelling commands that will be send 
 Modifier key for x10/25: Modifier key levelling allows for champions to be levelled to amounts that are not multiples of 100, but applying either CTRL or SHIFT. These options set the modifer to use and the level up amount that it is bound to. This must match the the in-game key bindings; the Game Settings options can help maintain that. It is recommended to use the default of CTRL for x25.
 	
 > Author's Note: Only one value can be used at once (i.e. you can have x100 and x25, or x100 and x10, not x100, x25 and x10. This is as currently there is no particular need for it the capability to do so.
-	
-	
-	
+
+Suppress Front Column: If selected champions other than Briv will not be levelled if in the front row of the M formation at the start of the run. This is useful to ensure any attacks made against the formation whilst the Casino runs are directed at Briv, and thus grant Steelbones stacks. Do not use if the other champion in the front row is needed for some reason. The champion will be levelled opportunistically when the formation is under attack so that they are not placed.
+
+Ghost Level: During the Casino, level champions that are not part of the formation so long as they will not be placed, either due to all slots being full or the formation being under attack by melee monsters. This option makes it more likely all speed effects will be ready for the first normal zone. Only applied when Thellora in is in the M formation, and should normally be enabled.
+
 Dynamic Diana: Diana can give excess chests after the daily reset. This option will raise her level to 200 for Electrum Chest Scavenger from 3 minutes before the daily reset to 30 minutes after. Her level in the main options should be left at 100.
 	
 > Author's Note: This is attempting to profit from a bug, but perhaps if enough people do so it might get fixed...
@@ -371,10 +373,6 @@ Dynamic Diana: Diana can give excess chests after the daily reset. This option w
 Recovery Levelling: With this option selected, if Briv does not have enough stacks to jump but the minimum stack zone has yet to be reached, champions will be levelled to their last update when they first reach a boss zone. This can aid killing armoured bosses, but will raise the minimum zone required to gain online stacks.
 
 > Author's Note: This was a feature carried over from BrivGemFarmLevelUp, and previously always on, but since it's often undesiable it has been made an option. It will be considered for future removal. Generally if you can clear the armoured bosses prior to the minimum stack zone with standard levels this only hurts you.
-
-Suppress Front Row: If selected champions other than Briv will not be levelled if in the front row of the M formation at the start of the run. This is useful to ensure any attacks made against the formation whilst the Casino runs are directed at Briv, and thus grant Steelbones stacks. Do not use if the other champion in the front row is needed for some reason. The champion will be levelled opportunistically when the formation is under attack so that they are not placed.
-
-Ghost Level: During the Casino, level champions that are not part of the formation so long as they will not be placed, either due to all slots being full or the formation being under attack by melee monsters. This option makes it more likely all speed effects will be ready for the first normal zone. Only applied when Thellora in is in the M formation, and should normally be enabled.
 	
 ### Level Manager  
 This section allows the levelling of champions to be configured. The formations should already be set up in game before reviewing it.
