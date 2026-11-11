@@ -727,7 +727,7 @@
 		Gui, IBM_Home:Add, Edit, +%editTextColour% w31 x+3 Number Limit4 vIBM_Online_Melf_Min gIBM_Generic_Setting_Int
 		this.AddToolTip("IBM_Online_Melf_Min","The farm will stack at the first stack zone greater than or equal to this")
 		Gui, IBM_Home:Add, Text, xs+10 y+5 h18 0x200, % "Farideh's ultimate trigger:"
-		Gui, IBM_Home:Add, DropDownList, cRed w110 x+3 AltSubmit vIBM_Online_Farideh_Condition gIBM_Generic_Setting_Int, Active enemies|Attacking enemies|Tatyana return
+		Gui, IBM_Home:Add, DropDownList, w110 x+3 AltSubmit vIBM_Online_Farideh_Condition gIBM_Generic_Setting_Int, Active enemies|Attacking enemies|Tatyana return
 		Gui, IBM_Home:Add, Text, x+3 h18 0x200, with threshold:
 		Gui, IBM_Home:Add, Edit, +%editTextColour% x+3 w32 Number Limit4 vIBM_Online_Farideh_Threshold gIBM_Generic_Setting_Int
 		this.AddToolTip("IBM_Online_Farideh_Threshold","Use these options to tune Farideh's ultimate usage.`nFor Active enemies and Attacking enemies, this is the number of enemies at which Farideh's ultimate will be used when stacking.`nFor Tatyana return the number of game milliseconds remaining on her return timer after which the ultimate should be used, e.g. 1250ms at x12.5 will result in the ultimate being used 100ms real time before she returns")
