@@ -222,6 +222,8 @@ Class IC_IriBrivMaster_Component
 		settings.IBM_Scan_Codes[0,"_DEFAULT"]:=11
 		settings.IBM_OffLine_Blank_Stop["_DEFAULT"]:=false
 		settings.IBM_Theme_Current["_DEFAULT"]:={"DefaultText":0xC0C0C0,"WarningText":0xF18500,"SpecialText1":0x8888FF,"SpecialText2":0x88FF88,"TableText":0xE0E0E0,"EditText":0x333333,"TableBackground":0x555555,"WindowBackground":0x333333,"TrafficLightBad":0xF00000,"TrafficLightGood":0x00F000,"TrafficLightNeutral":0xFFC000,"DarkMode":true}
+		settings.IBM_Route_Adventure["_DEFAULT"]:=1054 ;Tall Tales
+		settings.IBM_Route_Patron["_DEFAULT"]:=0 ;None
 		settings.HUB:={} ;Separate hub-only settings
 		settings.HUB.IBM_ChestSnatcher_Options_Min_Gem["_DEFAULT"]:=500000
 		settings.HUB.IBM_ChestSnatcher_Options_Min_Gold["_DEFAULT"]:=500

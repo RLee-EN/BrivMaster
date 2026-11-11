@@ -13,6 +13,7 @@ global g_TabList:=""
 global g_MouseTooltips:={}
 g_MouseTooltips.ByName:={}
 g_MouseTooltips.ByHandle:={}
+g_MouseTooltips.Enabled:=true
 global g_TabControlHeight
 global g_TabControlStartHeight
 global g_TabControlWidth
@@ -46,6 +47,7 @@ GuiControl, IBM_Home:MoveDraw, ModronTabControl, % "w" . g_TabControlWidth . " h
 Gui, IBM_Home:Show, % "x" . g_IBM_Settings.HUB.IBM_HOME_X . " y" . g_IBM_Settings.HUB.IBM_HOME_Y . " w" . g_TabControlWidth+10 . " h" . g_TabControlHeight+g_TabControlStartHeight+6 . " NA", % "Briv Master Home"
 g_IriBrivMaster_GUI.ApplyTooltips() ;Must be after controls are created by Gui, Show
 OnMessage(0x200, "CheckControlForTooltip") ;WM_MOUSEMOVE for tooltip tracking
+OnMessage(0x203, "DoubleClickHandler")
 
 ClearButtonStatusMessage()
 {
@@ -93,17 +95,26 @@ IBM_HomeGuiClose()
 
 CheckControlForTooltip() ;Shows a tooltip if the control with mouseover has a tooltip associated with it
 {
-	MouseGetPos,,,,hControl,2 ;Get the Hwnd
-	if(g_MouseToolTips.ByHandle.HasKey(hControl))
-	{
-		ToolTip % g_MouseToolTips.ByHandle[hControl].Tip
-		SetTimer, HideToolTip, -3000
-		return
+	if(g_MouseTooltips.Enabled)
+		{
+		MouseGetPos,,,,hControl,2 ;Get the Hwnd
+		if(g_MouseToolTips.ByHandle.HasKey(hControl))
+		{
+			ToolTip % g_MouseToolTips.ByHandle[hControl].Tip
+			SetTimer, HideToolTip, -3000
+			return
+		}
+		ToolTip
 	}
-	ToolTip
 }
 
 HideToolTip()
 {
     ToolTip
+}
+
+HideToolTipAndEnable()
+{
+    ToolTip
+	g_MouseTooltips.Enabled:=true
 }

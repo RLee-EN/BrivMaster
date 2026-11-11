@@ -427,11 +427,44 @@ class IC_BrivMaster_GemFarm_Class
 		;Check for active adventure
 		if(this.GameMaster.CurrentAdventure=="" OR this.GameMaster.CurrentAdventure<=0)
 		{
-			errorMsg:="Unable to read adventure data."
-			errorMsg.="`nPlease load into a valid adventure. Current adventure shows as: " . (CurrentObjID ? CurrentObjID : "-- Error --`n")
+			errorMsg:="Unable to read adventure data"
+			errorMsg.="`nPlease load into a valid adventure. Current adventure shows as: " . (this.GameMaster.CurrentAdventure ? this.GameMaster.CurrentAdventure : "-- Error --`n")
 			errorMsg.=this.PreFlightCheck_GenericMessage()
 			this.PreFlightErrorMessage("Adventure",errorMsg)
 			return false
+		}
+		else ;If the adventure is valid but not as expected allow the user to proceed if they wish. Patron is part of this as it's selected together with the adventure on the map screen
+		{
+			wrongAdventure:=this.GameMaster.CurrentAdventure!=g_IBM_Settings["IBM_Route_Adventure"]
+			wrongPatron:=g_ServerCall.activePatronID!=g_IBM_Settings["IBM_Route_Patron"]
+			if(wrongAdventure and wrongPatron)
+			{
+				errorMsg:="Unexpected adventure and patron selected"
+				errorMsg.="`nCurrent Adventure: " . this.GameMaster.CurrentAdventure . " but expected: " . g_IBM_Settings["IBM_Route_Adventure"]
+				errorMsg.="`nCurrent Patron: " . g_ServerCall.activePatronID . " but expected: " . g_IBM_Settings["IBM_Route_Patron"]
+				errorMsg.="`nProceed anyway?"
+				this.PreFlightErrorMessage("Adventure and Patron",errorMsg,32+4) ;32 is Question, 4 is Yes/No
+				IfMsgBox, No
+					return false
+			}
+			else if (wrongAdventure)
+			{
+				errorMsg:="Unexpected adventure selected"
+				errorMsg.="`nCurrent Adventure: " . this.GameMaster.CurrentAdventure . " but expected: " . g_IBM_Settings["IBM_Route_Adventure"]
+				errorMsg.="`nProceed anyway?"
+				this.PreFlightErrorMessage("Adventure",errorMsg,32+4) ;32 is Question, 4 is Yes/No
+				IfMsgBox, No
+					return false
+			}
+			else if (wrongPatron)
+			{
+				errorMsg:="Unexpected patron selected"
+				errorMsg.="`nCurrent Patron: " . g_ServerCall.activePatronID . " but expected: " . g_IBM_Settings["IBM_Route_Patron"]
+				errorMsg.="`nProceed anyway?"
+				this.PreFlightErrorMessage("Patron",errorMsg,32+4) ;32 is Question, 4 is Yes/No
+				IfMsgBox, No
+					return false
+			}		
 		}
 		;Check Briv is saved in the expected formations
 		brivInM:=g_Heroes[58].inM

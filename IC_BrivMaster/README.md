@@ -287,6 +287,10 @@ The Briv jump value for each formation. The formations are described in more det
 1. Q will be Briv's standard jump (e.g. 9 for, well, 9J, 12 for 12/11J)
 2. E will be 0 for non-feat swap, or the lower jump for feat swap (e.g. 11 for 12/11J)
 3. M will reflect the jump Briv will have in the Modron formation
+
+Adventure and Patron: The ID of the adventure (strictly the objective ID) and patron to be used for farming. Checked on start-up to flag if the wrong adventure or patron has been selected. As ID codes, these are not intended to be entered manually. Double-click the control to update from the game.
+
+> Author's Note: As with any setting, these values can be edited directly in the IC_BrivMaster_Settings.json should the need arise.
 	
 ### Stacking Zones  
 Offline: Offline stacking or blank restarts will be performed on or after this zone during normal operation. If offline stacking, set this based on the stacks needed.

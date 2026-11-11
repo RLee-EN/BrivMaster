@@ -695,8 +695,16 @@
 		}
 		this.AddToolTip("IBM_Route_BrivJump_Q", "The number of additional zones Briv jumps using the Q formation")
 		this.AddToolTip("IBM_Route_BrivJump_E", "The number of additional zones Briv jumps using the E formation when feat swapping. Ignored if Briv is not saved in E")
-		this.AddToolTip("IBM_Route_BrivJump_M", "The number of additional zones Briv jumps using the M (Modron) formation when feat swapping. Used when combining to determine the initial jump.")
-		GuiControlGet, lastItemPos, IBM_Home:Pos,IBM_Route_Export_Button ;Used for setting the next box
+		this.AddToolTip("IBM_Route_BrivJump_M", "The number of additional zones Briv jumps using the M (Modron) formation when feat swapping. Used when combining to determine the initial jump")
+		
+		Gui, IBM_Home:Add, Text, xs+10 y+8 h18 0x200, Adventure:
+		Gui, IBM_Home:Add, Edit, w40 x+3 ReadOnly vIBM_Route_Adventure gIBM_Generic_Setting_Int, % g_SF.Memory.ReadCurrentObjID()
+		Gui, IBM_Home:Add, Text, x+8 h18 0x200, Patron:
+		Gui, IBM_Home:Add, Edit, w20 x+3 ReadOnly vIBM_Route_Patron gIBM_Generic_Setting_Int, % g_SF.Memory.ReadPatronID()
+		this.AddToolTip("IBM_Route_Adventure", "The adventure ID (objective ID) of the adventure to be farmed, used to check the correct adventure is active when starting the script. Double-click to update from game")
+		this.AddToolTip("IBM_Route_Patron", "The patron ID of the adventure to be farmed, used to check the correct patron is active when starting the script. Double-click to update from game")
+		
+		GuiControlGet, lastItemPos, IBM_Home:Pos,IBM_Route_Patron ;Used for setting the next box
 		groupEnd:=lastItemPosY+lastItemPosH-nextGroupStart+8
 		GuiControl, IBM_Home:Move, IBM_Group_Route, h%groupEnd%
 		GuiControlGet, groupPos, IBM_Home:Pos,IBM_Group_Route ;Used for setting the next box
@@ -936,6 +944,8 @@
 		GuiControl, IBM_Home:, IBM_Route_BrivJump_Q, % g_IBM_Settings.IBM_Route_BrivJump_Q
 		GuiControl, IBM_Home:, IBM_Route_BrivJump_E, % g_IBM_Settings.IBM_Route_BrivJump_E
 		GuiControl, IBM_Home:, IBM_Route_BrivJump_M, % g_IBM_Settings.IBM_Route_BrivJump_M
+		GuiControl, IBM_Home:, IBM_Route_Adventure, % g_IBM_Settings.IBM_Route_Adventure
+		GuiControl, IBM_Home:, IBM_Route_Patron, % g_IBM_Settings.IBM_Route_Patron
 		;Stacking Zone
 		GuiControl, IBM_Home:, IBM_Offline_Stack_Zone, % g_IBM_Settings.IBM_Offline_Stack_Zone
 		GuiControl, IBM_Home:, IBM_OffLine_Stack_Min, % g_IBM_Settings.IBM_Offline_Stack_Min
@@ -1459,6 +1469,38 @@ IBM_Generic_Hub_Setting_String() ;Hub version - not currently in use as all stri
     g_IBM_Settings.HUB[A_GuiControl]:=value . ""
 }
 */
+
+;GUI double-click handler TODO: Have a system where controls register for this? An if stack (or select case) will get ugly if I start using it more often
+
+DoubleClickHandler()
+{
+	if(A_GuiControl=="IBM_Route_Adventure")
+	{
+		value:=g_SF.Memory.ReadCurrentObjID()
+		if value is integer
+		{
+			GuiControl, IBM_Home:, IBM_Route_Adventure, % value
+			g_MouseTooltips.Enabled:=false ;Disable normal tooltips so they do not immediately overwrite this one
+			ToolTip % "Updated Adventure to " . value
+			SetTimer, HideToolTipAndEnable, -3000
+		}
+		else
+			Msgbox 16, Briv Master, % "Unable to read valid adventure ID.`nMemory value [" . value "]"
+	}
+	else if(A_GuiControl=="IBM_Route_Patron")
+	{
+		value:=g_SF.Memory.ReadPatronID()
+		if value is integer
+		{			
+			GuiControl, IBM_Home:, IBM_Route_Patron, % value
+			g_MouseTooltips.Enabled:=false ;Disable normal tooltips so they do not immediately overwrite this one
+			ToolTip % "Updated Patron to " . value
+			SetTimer, HideToolTipAndEnable, -3000
+		}
+		else
+			Msgbox 16, Briv Master, % "Unable to read valid patron ID.`nMemory value [" . value "]"
+	}
+}
 
 ;Specific g-label handlers
 
