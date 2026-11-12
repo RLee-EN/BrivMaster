@@ -1488,6 +1488,8 @@ DoubleClickHandler()
 {
 	if(A_GuiControl=="IBM_Route_Adventure")
 	{
+		if(g_SF.Memory.ReadGameStarted()!=1)
+			g_IriBrivMaster.RefreshUserData()
 		value:=g_SF.Memory.ReadCurrentObjID()
 		if value is integer
 		{
@@ -1501,6 +1503,8 @@ DoubleClickHandler()
 	}
 	else if(A_GuiControl=="IBM_Route_Patron")
 	{
+		if(g_SF.Memory.ReadGameStarted()!=1)
+			g_IriBrivMaster.RefreshUserData()
 		value:=g_SF.Memory.ReadPatronID()
 		if value is integer
 		{			
@@ -1779,6 +1783,8 @@ IBM_Game_Copy_From_Game() ;Copy game location settings from the running game. No
 	if(hWnd) ;A game window exists TODO: We need to make more effort to set up and check memory reads here
 	{
 		location:=IBM_Game_Copy_From_Game_Location_Helper(useExe) . "\" ;Trailing \ is removed
+		if(g_SF.Memory.ReadGameStarted()!=1)
+			g_IriBrivMaster.RefreshUserData()
 		platformID:=g_SF.Memory.ReadPlatform()
 		if (platformID==21) ;21 is the EGS platform code
 		{
