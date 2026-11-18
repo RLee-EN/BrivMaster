@@ -58,8 +58,8 @@ class IC_BrivMaster_Heroes_Class ;A class for managing heroes. Or Champions, but
 			;g_IBM.Logger.AddMessage("CheckForDataChange() Hero collection unchanged from [" . size . "]")
 			return false
 		}
+		g_IBM.Logger.AddMessage("CheckForDataChange() Hero collection size changed from [" . this.heroCount . "] to [" . size . "]") ;Must be before the GenerateHeroIDtoHeroIndexMap() call as that will update heroCount
 		this.GenerateHeroIDtoHeroIndexMap()
-		g_IBM.Logger.AddMessage("CheckForDataChange() Hero collection size changed from [" . this.heroCount . "] to [" . size . "]")
 		return true
 	}
 
