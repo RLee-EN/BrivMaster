@@ -69,7 +69,11 @@ class IC_BrivMaster_Heroes_Class ;A class for managing heroes. Or Champions, but
 		for k,v in this
 		{
 			if k is integer ;Only call for the heroID objects. N.B. This cannot be an expression in AHK v1, i.e. 'if (k is integer)' is not valid
-				v.Reset(refreshIndex)
+			{
+				v.Reset()
+				if (refreshIndex)
+					v.UpdateHeroIndex(this.IDToIndexMap[v.ID])
+			}
 		}
 	}
 
@@ -265,11 +269,14 @@ class IC_BrivMaster_Hero_Class ;Represents a single hero. Can be extended for he
 	;---Levelling functions
 	;------------------------------------------------------------------------------------
 
-	Reset(refreshIndex:=false)
+	Reset()
 	{
 		this.Current:=this.Master.Clone()
-		if(refreshIndex)
-			this.HeroIndex:=this.IDToIndexMap[this.ID]
+	}
+	
+	UpdateHeroIndex(newIndex)
+	{
+		this.HeroIndex:=newIndex
 	}
 
 	ApplyLevelSettings(levelsettings,savedFormationChamps) ;Set up this champion's levelling and formation related properties
