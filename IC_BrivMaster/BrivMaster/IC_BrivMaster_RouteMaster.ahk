@@ -136,7 +136,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 
 	NeedToStack() ;Is stacking this run required, i.e. do we have less Steelbones than needed for the *next* run
 	{
-		return g_Heroes[58].ReadSBStacks() < this.GetTargetStacks()
+		return g_Heroes[58].ReadSBStacks()<this.GetTargetStacks()
 	}
 
 	GetTargetStacks(ignoreHaste:=false, forceRecalc:=false) ;Number of Steelbones stacks needed for the next run. Ignore haste is used for the status string showing the expected per run stack usage, rather than in-run calculation
@@ -297,7 +297,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 		jumps:=this.zones[calcResult.zone].jumpsToFinish
 		calcResult.jumpsToDepletion:=0
 		calcResult.partialRun:=false
-		if (jumps < 1) ;No stacks needed if no jumps required
+		if (jumps<1) ;No stacks needed if no jumps required
 		{
 			return calcResult
 		}
@@ -321,7 +321,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 			zone:=g_SF.Memory.ReadCurrentZone()
 		else ;Use the highest zone, as we should have spent the stacks as we left the previous one
 			zone:=g_SF.Memory.ReadHighestZone()
-		return g_Heroes[58].ReadHasteStacks() >= this.zones[zone].stacksToFinish
+		return g_Heroes[58].ReadHasteStacks()>=this.zones[zone].stacksToFinish
 	}
 
 	ShouldOfflineStack()
