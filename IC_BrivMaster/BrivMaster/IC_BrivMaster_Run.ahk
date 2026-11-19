@@ -93,9 +93,11 @@ class IC_BrivMaster_GemFarm_Class
 		if (g_IBM_Settings["IBM_Level_Diana_Cheese"]) ;Diana Electrum Chest Cheese things
 			this.DianaCheeseHelper:=New IC_BrivMaster_DianaCheese_Class
 		g_SharedData.UpdateOutbound("IBM_BuyChests",false)
-		this.PreviousZoneStartTime:=A_TickCount ;TODO: These 3 variables are for CheckifStuck, could maybe using encapsulating somewhere else (simple object for it?)
+		this.PreviousZoneStartTime:=A_TickCount ;TODO: These 5 variables are for CheckifStuck, could maybe using encapsulating somewhere else (simple object for it?)
 		this.CheckifStuck_lastCheck:=0
         this.CheckifStuck_fallBackTries:=0
+		this.CheckifStuck_Timeout_Toggle:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Stuck"]*0.5) ;30s at default 60s
+		this.CheckifStuck_Timeout_Fallback:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Stuck"]*0.75) ;45s at default 60s
 		Loop
         {
 			this.currentZone:=g_SF.Memory.ReadCurrentZone() ;Class level variable so it can be reset during rollbacks TODO: Move to RouteMaster
@@ -306,30 +308,30 @@ class IC_BrivMaster_GemFarm_Class
         }
     }
 
-    CheckifStuck() ;A test if stuck on current area. After 35s, toggles autoprogress every 5s. After 45s, attempts falling back up to 2 times. After 65s, restarts level.
+    CheckifStuck() ;Check if stuck based on the g_IBM_Settings["IBM_Timeout_Static_Stuck"] setting TODO: This logic needs a review, with some running multiple times when it probably doesn't need to?
     {
 		dtCurrentZoneTime:=A_TickCount - this.PreviousZoneStartTime
-		if (dtCurrentZoneTime<=35000) ;Irisiri - added fast exit for the standard case
+		if (dtCurrentZoneTime<=this.CheckifStuck_Timeout_Toggle) ;No action up to default 30s
 			return false
-        else if (dtCurrentZoneTime>35000 AND dtCurrentZoneTime<=45000 AND dtCurrentZoneTime - this.CheckifStuck_lastCheck > 5000) ; first check - ensuring autoprogress enabled
+        else if (dtCurrentZoneTime>this.CheckifStuck_Timeout_Toggle AND dtCurrentZoneTime<=this.CheckifStuck_Timeout_Fallback AND dtCurrentZoneTime - this.CheckifStuck_lastCheck > 3000) ;Default 30 to 45s, toggle progress every 3s
         {
             this.RouteMaster.ToggleAutoProgress(1, true)
-            if(dtCurrentZoneTime < 40000) ;TODO: What purpose does this serve? To avoid interfering with the next check block?
+            if(dtCurrentZoneTime<this.CheckifStuck_Timeout_Fallback-3000) ;TODO: What purpose does this serve? To avoid interfering with the next check block?
                 this.CheckifStuck_lastCheck:=dtCurrentZoneTime
         }
-        if (dtCurrentZoneTime>45000 AND this.CheckifStuck_fallBackTries < 3 AND dtCurrentZoneTime - this.CheckifStuck_lastCheck > 15000) ; second check - Fall back to previous zone and try to continue
+        if (dtCurrentZoneTime>this.CheckifStuck_Timeout_Fallback AND this.CheckifStuck_fallBackTries < 3 AND dtCurrentZoneTime - this.CheckifStuck_lastCheck>10000) ;Default 45s, fall back to previous zone and try to continue
         {
-			; reset memory values in case they missed an update.
+			;Reset memory values in case they missed an update.
             this.GameMaster.Hwnd:=WinExist("ahk_exe " . g_IBM_Settings["IBM_Game_Exe"]) ;TODO: This can screw things up if the there is more than one process open. At least align with .PID?
             g_SF.Memory.OpenProcessReader()
             g_ServerCall.Update()
             this.RouteMaster.FallBackFromZone() ;Try a fall back
-            this.RouteMaster.SetFormation() ;In the base script this just goes to Q, which might not be ideal, especially for feat swap
+            this.RouteMaster.SetFormation()
             this.RouteMaster.ToggleAutoProgress(1, true)
             this.CheckifStuck_lastCheck:=dtCurrentZoneTime
             this.CheckifStuck_fallBackTries++
         }
-        if (dtCurrentZoneTime>65000)
+        if (dtCurrentZoneTime>g_IBM_Settings["IBM_Timeout_Static_Stuck"]) ;After default 60s, restart
         {
 			this.GameMaster.RestartAdventure("Game is stuck z[" . g_SF.Memory.ReadCurrentZone() . "]" )
             this.GameMaster.SafetyCheck()
@@ -353,7 +355,7 @@ class IC_BrivMaster_GemFarm_Class
 	
 	ModronResetCheck() 	;Waits for modron to reset. Closes IC if it fails.
     {
-        if(this.WaitForModronReset(45000)) ;Don't use timeout factor here as this isn't related to host performance
+        if(this.WaitForModronReset(g_IBM_Settings["IBM_Timeout_Static_Reset"])) ;Don't use timeout factor here as this isn't related to host performance
 			this.TriggerStart:=true ;For some users the modron core reset count doesn't always increase post reset, despite my PC and tablet both working reliably. It might be a connectivity issue as it appears to be done by the server
 		else
         {
@@ -365,7 +367,7 @@ class IC_BrivMaster_GemFarm_Class
 		this.PreviousZoneStartTime:=A_TickCount
     }
 	
-	WaitForModronReset(timeout:=60000)
+	WaitForModronReset()
     {
         StartTime:=A_TickCount
         ElapsedTime:=0

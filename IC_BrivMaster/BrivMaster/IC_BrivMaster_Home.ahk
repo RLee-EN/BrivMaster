@@ -179,7 +179,12 @@ Class IC_IriBrivMaster_Component
 		settings.IBM_Game_Path["_DEFAULT"]:="" ;Path and Launch command are user dependant so can't have a default
 		settings.IBM_Game_Launch["_DEFAULT"]:=""
 		settings.IBM_Game_Hide_Launcher["_DEFAULT"]:=false
-		settings.IBM_OffLine_Timeout["_DEFAULT"]:=5
+		settings.IBM_Timeout_Dynamic_Casino["_DEFAULT"]:=100000
+		settings.IBM_Timeout_Dynamic_Stacking["_DEFAULT"]:=200000
+		settings.IBM_Timeout_Static_Reset["_DEFAULT"]:=45000
+		settings.IBM_Timeout_Static_Launch["_DEFAULT"]:=50000
+		settings.IBM_Timeout_Static_Close["_DEFAULT"]:=10000
+		settings.IBM_Timeout_Static_Stuck["_DEFAULT"]:=60000
 		settings.IBM_Window_X["_DEFAULT"]:=0
 		settings.IBM_Window_Y["_DEFAULT"]:=900 ;To keep the window on-screen at 1080
 		settings.IBM_Window_Hide["_DEFAULT"]:=false

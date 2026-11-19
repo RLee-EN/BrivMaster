@@ -2,7 +2,6 @@
 
 class IC_BrivMaster_EllywickCasino_Class ;A class to manage the whole casino, without the use of a timer
 {
-	static TIMEOUT_BASE:=100000  ;Allow 10s at x10 speed, 8s at x12.5
 	static ULT_DELAY:=3750 ;Half of the 7500ms duration of Elly's ult, including run out time, per the CotFeywild .IsUltimateActive read TODO: This is for 5 cards (1000 start+750 per card+750 applying debuffs+2000 end), possibly should go halfway between 4 and 5?
 	
 	__New()
@@ -59,7 +58,7 @@ class IC_BrivMaster_EllywickCasino_Class ;A class to manage the whole casino, wi
 			zoneIncomplete:=g_Heroes[139].inM ;Without Thellora in M, this check is not needed as we never do M-jumps
 			levellingDoneThisLoop:=false
 			DllCall("QueryPerformanceCounter", "Int64*", startTime)
-			timeOut:=startTime+(IC_BrivMaster_EllywickCasino_Class.TIMEOUT_BASE/gameSpeed)*g_IBM.CounterFrequency ;Convert the timeout to counter ticks and add to the start time to determine the max allowed time. This avoids calculations each loop iteration
+			timeOut:=startTime+(g_IBM_Settings["IBM_Timeout_Dynamic_Casino"]/gameSpeed)*g_IBM.CounterFrequency ;Convert the timeout to counter ticks and add to the start time to determine the max allowed time. This avoids calculations each loop iteration
 			lastLoopEndTime:=startTime ;Set for the first loop
 			while (lastLoopEndTime<timeOut)
             {

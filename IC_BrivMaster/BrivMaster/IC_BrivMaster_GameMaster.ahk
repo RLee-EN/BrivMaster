@@ -13,6 +13,9 @@ class IC_BrivMaster_GameMaster_Class ;A class for managing the game process
 		g_SF.Memory.OpenProcessReader()
 		this.CurrentAdventure:=g_SF.Memory.ReadCurrentObjID() ;This might fail, which will be checked in the pre-flight check
 		this.KEY_ESC:=g_InputManager.getKey("Esc") ;Used to dismiss the splash screen
+		this.OpenTimeout:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Launch"]*1.5) ;75s at default 50s timeout
+		this.ProcessWaitingTimeout:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Launch"]*0.3) ;15s at default 50s timeout
+		this.OpenProcessTimeout:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Launch"]*0.8) ;40s at default 50s timeout
 	}
 	
 	;-----------------------------------------------------------------------
@@ -21,39 +24,37 @@ class IC_BrivMaster_GameMaster_Class ;A class for managing the game process
 	
 	OpenIC(message:="")
     {
-		waitForReadyTimeout:=10000*g_IBM_Settings["IBM_OffLine_Timeout"] ;Default is 5, so 50s
-		timeoutVal:=5000*g_IBM_Settings["IBM_OffLine_Timeout"] + waitForReadyTimeout ;Default is 5, so 25s + the 50s above=75s
         loadingDone:=false
         g_SharedData.UpdateOutbound("LoopString","Starting Game" . (message ? " " . message : ""))
 		g_IBM.Logger.AddMessage("Starting Game" . (message ? " " . message : ""))
         WinGet, savedActive,, A ;Use handle as multiple windows could have the same name
         this.SavedActiveWindow:=savedActive
         StartTime := A_TickCount
-        while (!loadingZone AND ElapsedTime < timeoutVal)
+        while (!loadingZone AND ElapsedTime < this.OpenTimeout)
         {
 			this.Hwnd:=0
             ElapsedTime := A_TickCount - StartTime
-            if(ElapsedTime < timeoutVal)
+            if(ElapsedTime<this.OpenTimeout)
 			{
-				this.OpenProcessAndSetPID(timeoutVal - ElapsedTime)
+				this.OpenProcessAndSetPID()
 				Process, Priority, % this.PID, Realtime
 			}
             ElapsedTime:=A_TickCount - StartTime
-            if(ElapsedTime < timeoutVal)
-				this.SetLastActiveWindowWhileWaitingForGameExe(timeoutVal - ElapsedTime)
+            if(ElapsedTime < this.OpenTimeout)
+				this.SetLastActiveWindowWhileWaitingForGameExe(this.OpenTimeout - ElapsedTime)
             this.ActivateLastWindow()
             g_SF.Memory.OpenProcessReader()
 			g_SharedData.UpdateOutbound("IBM_ProcessSwap",true) ;Prompt the hub to update as well
             ElapsedTime:=A_TickCount - StartTime
-            if(ElapsedTime < timeoutVal)
-                loadingZone:=this.WaitForGameReady(waitForReadyTimeout) ;NOTE: WaitForGameReady will turn Critical On via WaitForFinalStatUpdates
+            if(ElapsedTime < this.OpenTimeout)
+                loadingZone:=this.WaitForGameReady() ;NOTE: WaitForGameReady will turn Critical On via WaitForFinalStatUpdates
             if(loadingZone)
                 g_ServerCall.Update()
 			else
 				g_IBM.IBM_Sleep(15) ;Moved this to an Else, otherwise it delays code progression when loading is sucessful
             ElapsedTime:=A_TickCount - StartTime
         }
-        if(ElapsedTime >= timeoutVal)
+        if(ElapsedTime>=this.OpenTimeout)
         {
 			Critical Off ;Potential edge case where loadingZone was set to true but we ran out time whilst exiting the loop
 			return -1 ; took too long to open
@@ -69,11 +70,9 @@ class IC_BrivMaster_GameMaster_Class ;A class for managing the game process
 	OpenProcessAndSetPID() ;Runs ICs and sets this.PID
     {
         this.PID:=0
-		timeoutLeft:=8000*g_IBM_Settings["IBM_OffLine_Timeout"] ;Default is 5, so 40s
-        processWaitingTimeout:=3000*g_IBM_Settings["IBM_OffLine_Timeout"] ;Default is 5, so 15s
         ElapsedTime:=0
         StartTime:=A_TickCount
-        while (!this.PID AND ElapsedTime < timeoutLeft )
+        while (!this.PID AND ElapsedTime<this.OpenProcessTimeout)
         {
 			g_SharedData.UpdateOutbound("LoopString","Opening IC...")
             existingPIDs:=this.GetExistingPIDList() ;Save a list of existing PIDs so we can find the new one the Run command creates TODO: Instead of checking if the Run command is executing the exe directly at run time, work it out once from the name so we don't save this when not needed?
@@ -101,7 +100,7 @@ class IC_BrivMaster_GameMaster_Class ;A class for managing the game process
 			{
 				StartTimePID:=A_TickCount
 				ElapsedTimePID:=0
-				while(!this.PID AND ElapsedTimePID < processWaitingTimeout)
+				while(!this.PID AND ElapsedTimePID<this.ProcessWaitingTimeout)
 				{
 					g_IBM.IBM_Sleep(45)
 					this.PID:=this.GetNewPID(existingPIDs)
@@ -200,8 +199,9 @@ class IC_BrivMaster_GameMaster_Class ;A class for managing the game process
 		WinActivate, %savedActive%
     }
 	
-	WaitForGameReady(timeout:=90000,skipFinal:=false) ;Waits for the game to be in a ready state. skipFinal is for relay return where we might come back at any point in the offline calculation of the new instance, so waiting for a specific sequence of zone inactive/active/inactive won't necessarily work
+	WaitForGameReady(skipFinal:=false) ;Waits for the game to be in a ready state. skipFinal is for relay return where we might come back at any point in the offline calculation of the new instance, so waiting for a specific sequence of zone inactive/active/inactive won't necessarily work
     {
+		timeout:=g_IBM_Settings["IBM_Timeout_Static_Launch"] ;50s by default
 		if (!g_IBM.routeMaster.HybridBlankOffline AND g_IBM.routeMaster.offlineSaveTime>=0) ;If this is set by stack restart
 			this.WaitForUserLogin()
 		timeoutTimerStart:=A_TickCount
@@ -326,7 +326,7 @@ class IC_BrivMaster_GameMaster_Class ;A class for managing the game process
 			sendMessageString:="ahk_pid " . this.PID
 		else
 			sendMessageString:="ahk_exe " . g_IBM_Settings["IBM_Game_Exe"]
-		timeout:=2000*g_IBM_Settings["IBM_OffLine_Timeout"] ;Default is 5, so 10s
+		timeout:=g_IBM_Settings["IBM_Timeout_Static_Close"] ;Default is 5, so 10s
 		if WinExist(sendMessageString)
 			SendMessage, 0x112, 0xF060,,, %sendMessageString%,,,, %timeout% ; WinClose
 		saveCompleteTime:=-1 ;Unset
@@ -345,10 +345,10 @@ class IC_BrivMaster_GameMaster_Class ;A class for managing the game process
 				g_IBM.Logger.AddMessage("CloseIC() Standard Loop "  . (saveStatus==1 ? "Save" : "Reads Invalid") . " - saveCompleteTime=[" . saveCompleteTime . "] Timeout=[" . A_TickCount - StartTime . "/" . timeout . "]")
 				g_IBM.routeMaster.CheckRelayRelease()
 				StartTime:=A_TickCount ;Reset timeout after save, there's no longer a reason not to close the game by force in the following loop
-				timeout:=500*g_IBM_Settings["IBM_OffLine_Timeout"] ;Default is 5, so 2.5s
+				timeout:=500*g_IBM_Settings["IBM_Timeout_Static_Close"] ;Default is 5, so 2.5s
 			}
         }
-		timeout:=2000*g_IBM_Settings["IBM_OffLine_Timeout"] ;Reset to standard
+		timeout:=g_IBM_Settings["IBM_Timeout_Static_Close"] ;Reset to standard
         StartTime:=A_TickCount
 		NextCloseAttempt:=A_TickCount ;Throttle input whilst continuing to check rapidly for game save and window closure
 		while (WinExist(sendMessageString) AND A_TickCount - StartTime < timeout) ; Outright murder

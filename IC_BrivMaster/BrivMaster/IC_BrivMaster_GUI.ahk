@@ -745,9 +745,6 @@
 		Gui, IBM_Home:Add, Edit, +%editTextColour% w30 x+3 Number Limit4 vIBM_OffLine_Sleep_Time gIBM_Generic_Setting_Int
 		Gui, IBM_Home:Add, Text, x+3 h18 0x200, ms
 		this.AddToolTip("IBM_OffLine_Sleep_Time", "The time to wait between the game closing and launching a new copy. This should only be increased from 0 if the lack of delay causes platform issues")
-		Gui, IBM_Home:Add, Text, x+15 h18 0x200, Timeout factor:
-		Gui, IBM_Home:Add, Edit, +%editTextColour% w20 x+3 Number Limit2 vIBM_OffLine_Timeout gIBM_Generic_Setting_Int
-		this.AddToolTip("IBM_OffLine_Timeout", "Controls the time allowed for the game to start and close. The start time is 10s times this value, and the initial close time is 2s times this value")
 		Gui, IBM_Home:Add, Text, xs+10 y+5 h18 0x200, Offline every:
 		Gui, IBM_Home:Add, Edit, +%editTextColour% w25 x+3 Number Limit3 vIBM_OffLine_Freq_Edit gIBM_OffLine_Freq_Edit
 		Gui, IBM_Home:Add, Text, x+5 h18 0x200, runs
@@ -967,7 +964,6 @@
 		GuiControl, IBM_Home:, IBM_OffLine_Blank_Stop, % g_IBM_Settings.IBM_OffLine_Blank_Stop
 		GuiControl, IBM_Home:, IBM_OffLine_Blank_Relay_Zones, % g_IBM_Settings.IBM_OffLine_Blank_Relay_Zones
 		IBM_Offline_Blank_EnableControls(g_IBM_Settings.IBM_OffLine_Blank,g_IBM_Settings.IBM_OffLine_Blank_Relay)
-		GuiControl, IBM_Home:, IBM_OffLine_Timeout, % g_IBM_Settings.IBM_OffLine_Timeout
 		GuiControl, IBM_Home:, IBM_Route_Offline_Restore_Window, % g_IBM_Settings.IBM_Route_Offline_Restore_Window
 		;Ellywick's Casino
 		GuiControl, IBM_Home:, IBM_Casino_Target_Base, % g_IBM_Settings.IBM_Casino_Target_Base

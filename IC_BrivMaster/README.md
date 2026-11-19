@@ -319,10 +319,6 @@ Platform Login: When a stacking restart is needed BrivMaster will restart the ga
 	
 Restart sleep: The amount of time to wait between the game closing and be restarted when going offline, whether stacking or not. This should generally be left at 0, but some platforms can have issues detecting the game's state if it is instantly restarted, and a small delay can help; suggest increasing in 50ms steps.
 
-Timeout factor: Controls the time allowed for the game to start and close. The start time is 10s times this value, and the close value a number of seconds equal to it. For starting the game if it fails to open in time is is closed and then restarted (which, if not allowed enough time on a slow PC, can result in it being stuck in an infinte loop), and for closing once the time expires more aggressive commands are used to force the game close, which will interrupt a save if done too early.
-	
-> Author's Note: A fast PC should use the default of 5. A very slow mobile device might benefit from values at high as 10.
-	
 Offline every x runs: This is the frequency of offline runs. A value of 1 disables hybrid stacking and will restart every run if stacks are required, a higher value means to restart every x runs.
 	
 > Author's Note: The optimal value will depend upon the user's system and platform, as memory bloat can be impacted by things like platform and drivers, and also by the type of offline being done, as it is based on the opportunity cost of doing an offline stack; therefore a relay blank restart has less impact than offline stacking for doubles, which in term has less imapct than offline stacking for singles. The ideal value is likely between 40 and 80. This setting is often referred to as FORT (Force Offline Run Threshold), taken from the BrivGemFarm setting with the same purpose.
@@ -421,13 +417,28 @@ The following provide the Author's current setup, which is an end-game farm usin
 > Author's Note: When saving Briv Master's settings, level settings will be ignored if no champions are displayed at all. Take care if tweaking options whilst doing something else in-game, as it is a little bit too easy to overwrite your settings. Once you have things configured to your satisfaction making a backup of IC_BrivMaster_Settings.json might be sensible.
 
 ## Hidden Settings
-Occasionally a setting may be added to Briv Master but not exposed via the GUI, most likely because it was a request with no opportunity cost, but not something that I necessarily agree with. Changing these settings requires editing the IC_BrivMaster_Settings.json file directly.
+Some settings are not exposed via the GUI, either because they are not meant to be changed in most cases, or because it was a request with no opportunity cost, but not something that I necessarily agree with. Changing these settings requires editing the IC_BrivMaster_Settings.json file directly
 - IBM_Allow_Modron_Buff_Off: Normally Briv Master will not start unless all three Modron core functions are enabled. Changing this from 0 to 1 allows the script to start with the Buffs portion disabled. This was added to allow potions to be used by familiars saved in the M formation instead. The user in question didn't want to have to change the options between different activities.
 - IBM_Format_Date_Display: AutoHotKey date format string (per https://www.autohotkey.com/docs/v1/lib/FormatTime.htm) to be used for date and time display.
 - IBM_Format_Date_File: As above, but must only use characters valid in file names. This notably means the colon is not permitted.
 - IBM_Offsets_URL: The GitHub URL to check for Offsets. Change this if you do not wish to use my repository.
 - IBM_Scan_Codes: This is a mapping of keys to the scan codes that a keyboard sends when you press them. The defaults will be appropriate for QWERTY keyboards, but other layouts might require changes. Click damage, which is ` on QWERTY keyboards, is most likely to need changes.
 - IBM_Casino_Front_Row_Threshold: Front row and ghost levelling in the Casino are allowed when the number of attacking monsters is greater than or equal to this value. Increasing it means that those will not trigger until something spawns multiple enemies at once, either Tatyana or Melf with his spawn-more effect active. This will mean that in faster (no re-roll) Casinos the front row or ghost levelling will not trigger, and the levelling will have to be done afterwards which may slow down the run. This was added for testing and is likely to be removed.
+The following timeouts are dynamic and are adjusted based on game speed, e.g. IBM_Timeout_Dynamic_Stacking defaults to 200000ms, which is 200s at x1, 20s at x10 and 16s at x12.5.
+- IBM_Timeout_Dynamic_Casino: Casino timeout in milliseconds at x1 game speed
+- IBM_Timeout_Dynamic_Stacking: Online stacking timeout in milliseconds at x1 game speed
+The following timeouts are static and do not change with game speed. Some previously used the legacy 'Timeout factor' setting and have defaults that match the default value of '5' for that.
+- IBM_Timeout_Static_Reset: Modron reset timeout in milliseconds
+- IBM_Timeout_Static_Launch: Timeout used when launching the game in milliseconds:
+	- The value entered is the timeout for one attempt to start the game
+	- 150% of this value is used as the overall timeout for starting the game
+	- 80% of this value is used for the timeout for opening the game process and aquiring the process ID
+	- 30% of this value is used for the timeout for aquiring the process ID
+- IBM_Timeout_Static_Close: Timeout used when closing the game
+- IBM_Timeout_Static_Stuck: Timeout used when detecting the game is stuck
+	- The value entered is the timeout before the game is restarted
+	- 50% of this value is used as the point that the script begins to toggle autoprogress
+	- 75% of this value is used as the point that the script attempts to fall back
 
 I hope that this project is useful to you, either directly or through ideas that have shared with BrivGemFarm and its addons (largely by Emmote).
 

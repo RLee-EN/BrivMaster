@@ -621,7 +621,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 			if(activateFariUlt) ;InitMemoryReads must come after formation switch so Tatyana's effect handler is available
 				this.InitMemoryReads()
 			g_SharedData.UpdateOutbound("LoopString","Online Stack")
-			maxOnlineStackTime:=(200000*g_IBM.CounterFrequency)/gameSpeed ;Reduces the 200s to 16s @ 12.5. Factoring the CounterFrequency in here means we can avoid doing it every loop
+			maxOnlineStackTime:=(g_IBM_Settings["IBM_Timeout_Dynamic_Stacking"]*g_IBM.CounterFrequency)/gameSpeed ;Reduces the 200s to 16s @ 12.5. Factoring the CounterFrequency in here means we can avoid doing it every loop
 			if(g_IBM.failedConversionMode) ;In this case we're probably killing things as we've levelled champions, allow significantly more time
 				maxOnlineStackTime*=5
 			elapsedTime:=0
@@ -1528,7 +1528,7 @@ class IC_BrivMaster_Relay_SharedData_Class ;Allows for communication between thi
 		g_IBM.GameMaster.Hwnd:=this.RelayHwnd
 		g_IBM.Logger.AddMessage(logText . "to PID=[" . g_IBM.GameMaster.PID . "] and Hwnd=[" . g_IBM.GameMaster.Hwnd . "]")
 		g_SF.Memory.OpenProcessReader(g_IBM.GameMaster.PID)
-		if (g_IBM.GameMaster.WaitForGameReady(10000*g_IBM_Settings["IBM_OffLine_Timeout"],true)) ;Default is 5, so 50s. Call WaitForGameReady() with skipFinal:=true as we won't know where in the offline calc we are if we happen to trigger one
+		if (g_IBM.GameMaster.WaitForGameReady(true)) ;Call WaitForGameReady() with skipFinal:=true as we won't know where in the offline calc we are if we happen to trigger one
 			g_IBM.Logger.AddMessage("ProcessSwap() completed switching process")
 		else
 			g_IBM.Logger.AddMessage("ProcessSwap() WaitForGameReady() call failed whilst switching process")
