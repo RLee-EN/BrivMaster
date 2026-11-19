@@ -301,18 +301,18 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 		{
 			return calcResult
 		}
-        while (jumps > 0)
-        {
-            if (calcResult.haste < 50) ;Won't jump with <50 stacks, script will in most cases abort the run when they run out
-            {
+		while (jumps > 0)
+		{
+			if (calcResult.haste < 50) ;Won't jump with <50 stacks, script will in most cases abort the run when they run out
+			{
 				calcResult.partialRun:=true
 				calcResult.jumpsToDepletion:=this.zones[calcResult.zone].jumpsToFinish - jumps
 				return calcResult
 			}
-            calcResult.haste:=Round(calcResult.haste*0.968)
-            jumps--
-        }
-        return calcResult
+			calcResult.haste:=Round(calcResult.haste*0.968)
+			jumps--
+		}
+		return calcResult
 	}
 
 	EnoughHasteForCurrentRun() ;True if we have enough haste stacks to complete the run
@@ -325,20 +325,20 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 	}
 
 	ShouldOfflineStack()
-    {
-        if (this.HybridBlankOffline) ;This logic is not used if we are doing blank offlines
+	{
+		if (this.HybridBlankOffline) ;This logic is not used if we are doing blank offlines
 			return false
 		else if (this.cycleForceOffline) ;Force offline takes priority, as it will often be used with offline disabled below
 			return true
 		else if (this.cycleDisableOffline)
 			return false
 		else if (this.cycleMax==1) ;Hybrid disabled
-            return true
-        else if (this.cycleCount>=this.cycleMax) ;Hybrid offline
+			return true
+		else if (this.cycleCount>=this.cycleMax) ;Hybrid offline
 			return true
 		else ;Stack online
 			return false
-    }
+	}
 
 	ExpectingGameRestart()
 	{
@@ -365,7 +365,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 	}
 
 	BlankRestart() ;Restart without stacking TODO: Can we check for offline progress to detect resets here, in case of unwanted autoprogress?
-    {
+	{
 		if(g_IBM_Settings["IBM_OffLine_Blank_Stop"])
 			this.ToggleAutoProgress(0,false,true)
 		startStacks:=g_Heroes[58].ReadSBStacks()
@@ -404,20 +404,20 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 		}
 		else
 			g_IBM.Logger.AddMessage("BlankRestart() Exit, End@z" . returnZone . "," . generatedStacks . ",Time:" . totalTime . ",OfflineTime:" . g_SF.Memory.ReadOfflineTime() . ",Server:" . g_SF.Memory.IBM_GetWebRootFriendly())
-        if(g_IBM_Settings["IBM_OffLine_Blank_Stop"])
+		if(g_IBM_Settings["IBM_OffLine_Blank_Stop"])
 			this.ToggleAutoProgress(1,false,true)
 		g_SharedData.UpdateOutbound("IBM_RunControl_StackString","Restarted at z" . returnZone . " in " . Round(totalTime/ 1000,2) . "s")
 		g_IBM.PreviousZoneStartTime:=A_TickCount
-    }
+	}
 
 	TestForSteelBonesStackFarming() ;Returns true if we have a failure, namely the out of stacks and need to force restart case. TODO: Are we covering needing to stack at the recovery minimum when only offline stacking?
-    {
+	{
 		currentZone:=g_SF.Memory.ReadCurrentZone()
-        if (currentZone < 0 OR currentZone>=this.targetZone) ;Don't test while modron resetting
-            return 0
+		if (currentZone < 0 OR currentZone>=this.targetZone) ;Don't test while modron resetting
+			return 0
 		stacks:=g_Heroes[58].ReadSBStacks()
 		targetStacks:=this.GetTargetStacks()
- 		if (stacks<targetStacks)
+		if (stacks<targetStacks)
 		{
 			shouldOffline:=this.ShouldOfflineStack()
 			if(shouldOffline AND currentZone>=g_IBM_Settings["IBM_Offline_Stack_Zone"]) ;This is now >= so we don't have to go around taking 1 off the stackzone all the time
@@ -432,11 +432,11 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 				return 0
 			}
 		}
-        ;Briv ran out of jumps but has enough stacks for a new adventure => restart adventure. With protections from repeating too early. Irisiri - changed >z10 to >Thell target, but this will fail if Thell isn't present
+		;Briv ran out of jumps but has enough stacks for a new adventure => restart adventure. With protections from repeating too early. Irisiri - changed >z10 to >Thell target, but this will fail if Thell isn't present
 		;04Jul25: Added check for transitioning, so we actually spend the last jump before resetting, otherwise we'll go as soon as the stacks are spent which is before we benefit from them
-        if (g_Heroes[58].ReadHasteStacks()<50 AND stacks>=targetStacks AND g_SF.Memory.ReadHighestZone()>this.thelloraTarget AND g_SF.Memory.ReadHighestZone()<this.targetZone AND !g_SF.Memory.ReadTransitioning()) ;Removed the 5-zones-from-end check; if there's an armoured boss we'll not be able to be progress. TODO: With adventure-aware routing we could determine the last safe zone to walk from. Updated to not try and reset during relay restart (which shouldn't really happen since we don't blank if we don't have enough stacks...) Even more TODO: Should we check ReadAreaActive() here as well?
-        {
-            if (this.RelayBlankOffline AND this.RelayData.IsActive()) ;TODO: Something smart here
+		if (g_Heroes[58].ReadHasteStacks()<50 AND stacks>=targetStacks AND g_SF.Memory.ReadHighestZone()>this.thelloraTarget AND g_SF.Memory.ReadHighestZone()<this.targetZone AND !g_SF.Memory.ReadTransitioning()) ;Removed the 5-zones-from-end check; if there's an armoured boss we'll not be able to be progress. TODO: With adventure-aware routing we could determine the last safe zone to walk from. Updated to not try and reset during relay restart (which shouldn't really happen since we don't blank if we don't have enough stacks...) Even more TODO: Should we check ReadAreaActive() here as well?
+		{
+			if (this.RelayBlankOffline AND this.RelayData.IsActive()) ;TODO: Something smart here
 			{
 				g_IBM.Logger.AddMessage("TestForSteelBonesStackFarming() force restart suppressed due to Relay")
 			}
@@ -446,9 +446,9 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 				g_IBM.GameMaster.RestartAdventure("Out of Haste and have Steelbones for next")
 				return 1
 			}
-        }
+		}
 		return 0
-    }
+	}
 
 	ResetCycleCount()
 	{
@@ -614,7 +614,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 					activateFariUlt:=0
 				}
 				else
- 					activateFariUlt:=1
+					activateFariUlt:=1
 			}
 			gameSpeed:=g_SF.Memory.IBM_ReadBaseGameSpeed()
 			this.Setup(activateFariUlt,15000/gameSpeed) ;Allow 1500ms at x10 for each state, 1200ms at x12.5
@@ -892,11 +892,11 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 	}
 
 	PostponeStacking(currentZone) ;Used to delay stacking whilst waiting for the target stack zone and preferred stacking zone
-    {
-        if(currentZone<g_IBM_Settings["IBM_Offline_Stack_Min"]) ;Never attempt to stack below minimum recovery stack zone
+	{
+		if(currentZone<g_IBM_Settings["IBM_Offline_Stack_Min"]) ;Never attempt to stack below minimum recovery stack zone
 			return true
 		if (g_Heroes[58].ReadHasteStacks()<50) ;Stack immediately if Briv can't jump
-            return false
+			return false
 		if (currentZone>this.LastSafeStackZone) ;Stack immediately to avoid resetting before stacking
 			return false
 		if(currentZone<g_IBM_Settings["IBM_Online_Melf_Min"]) ;Below target minimum online zone (legacy setting - bad name). Here as this will be called once we pass the recovery minimum
@@ -904,194 +904,194 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 		if (this.zones[currentZone].stackZone==false)
 			return true
 		return false
-    }
+	}
 
 	GetLastSafeStackZone()
-    {
-        lastZone:=this.targetZone - 1
-        ; Move back one zone if the last zone before reset is a boss.
-        if (Mod(lastZone,5)==0)
-            lastZone--
-        return lastZone - this.zonesPerJumpQ
-    }
+	{
+		lastZone:=this.targetZone - 1
+		; Move back one zone if the last zone before reset is a boss.
+		if (Mod(lastZone,5)==0)
+			lastZone--
+		return lastZone - this.zonesPerJumpQ
+	}
 
-    ShouldAvoidRestack(stacks, targetStacks) 	; avoids attempts to stack again after stacking has been completed and level not reset yet.
-    {
-        if ( stacks >= targetStacks )
-            return 1
-        if (g_SF.Memory.ReadCurrentZone() == 1) ; likely modron has reset
-            return 1
-        if (g_SF.Memory.ReadCurrentZone() < g_IBM_Settings["IBM_Offline_Stack_Min"]) ; don't stack below min stack zone ;TODO: Is this useful?
-            return 1
-        return 0
-    }
+	ShouldAvoidRestack(stacks, targetStacks) 	; avoids attempts to stack again after stacking has been completed and level not reset yet.
+	{
+		if ( stacks >= targetStacks )
+			return 1
+		if (g_SF.Memory.ReadCurrentZone() == 1) ; likely modron has reset
+			return 1
+		if (g_SF.Memory.ReadCurrentZone() < g_IBM_Settings["IBM_Offline_Stack_Min"]) ; don't stack below min stack zone ;TODO: Is this useful?
+			return 1
+		return 0
+	}
 
 	StackRestart() ;TODO: Put rollback detection back into this?
-    {
+	{
 		startStacks:=lastStacks:=stacks:=g_Heroes[58].ReadSBStacks()
 		targetStacks:=this.GetTargetStacks(,true) ;Force recalculation of remaining haste stacks
-        if (this.ShouldAvoidRestack(stacks, targetStacks))
-        {
+		if (this.ShouldAvoidRestack(stacks, targetStacks))
+		{
 			return
 		}
-        retryAttempt := 0
-        if (this.cycleMax == 1) ;If doing hybrid we should never retry - the purpose of going offline is to clear memory bloat, and that is fulfilled whether we stack or not
+		retryAttempt := 0
+		if (this.cycleMax == 1) ;If doing hybrid we should never retry - the purpose of going offline is to clear memory bloat, and that is fulfilled whether we stack or not
 			maxRetries:= 2
 		else
 			maxRetries:=0
 		offlineStartTime:=A_TickCount
-        while (stacks < targetStacks AND retryAttempt <= maxRetries )
-        {
+		while (stacks < targetStacks AND retryAttempt <= maxRetries )
+		{
 			this.StackFailRetryAttempt++ ; per run
-            retryAttempt++               ; pre stackfarm call
-            this.StackFarmSetup()
-            if (this.targetZone != "" AND g_SF.Memory.ReadCurrentZone() > this.targetZone)
-            {
-                g_SharedData.UpdateOutbound("LoopString","Attempted to offline stack after modron reset - verify settings")
-                break
-            }
+			retryAttempt++               ; pre stackfarm call
+			this.StackFarmSetup()
+			if (this.targetZone != "" AND g_SF.Memory.ReadCurrentZone() > this.targetZone)
+			{
+				g_SharedData.UpdateOutbound("LoopString","Attempted to offline stack after modron reset - verify settings")
+				break
+			}
 			this.offlineSaveTime:=g_IBM.GameMaster.CloseIC( "StackRestart" . (this.StackFailRetryAttempt > 1 ? (" - Warning: Retry #" . this.StackFailRetryAttempt - 1 . ". Check Stack Settings."): "") )
 			g_SharedData.UpdateOutbound("LoopString","Stack Sleep: ")
-            ElapsedTime:=0
+			ElapsedTime:=0
 			sleepStart:=A_TickCount ;Seperate to the save timer, this is the delay in restarting the game specifically
 			while ( ElapsedTime < g_IBM_Settings["IBM_OffLine_Sleep_Time"] )
-            {
-                g_SharedData.UpdateOutbound("LoopString","Stack Sleep: " . g_IBM_Settings["IBM_OffLine_Sleep_Time"] - ElapsedTime)
-                g_IBM.IBM_Sleep(15)
+			{
+				g_SharedData.UpdateOutbound("LoopString","Stack Sleep: " . g_IBM_Settings["IBM_OffLine_Sleep_Time"] - ElapsedTime)
+				g_IBM.IBM_Sleep(15)
 				ElapsedTime := A_TickCount - sleepStart
-            }
+			}
 			g_IBM.GameMaster.SafetyCheck()
-            stacks:=g_Heroes[58].ReadSBStacks()
-            ;check if save reverted back to below stacking conditions
-            if (g_SF.Memory.ReadCurrentZone() < g_IBM_Settings["IBM_Offline_Stack_Min"])
-            {
-                g_SharedData.UpdateOutbound("LoopString","Stack Sleep: Failed (zone < min)")
-                Break  ; "Bad Save? Loaded below stack zone, see value."
-            }
-            lastStacks:=stacks
+			stacks:=g_Heroes[58].ReadSBStacks()
+			;check if save reverted back to below stacking conditions
+			if (g_SF.Memory.ReadCurrentZone() < g_IBM_Settings["IBM_Offline_Stack_Min"])
+			{
+				g_SharedData.UpdateOutbound("LoopString","Stack Sleep: Failed (zone < min)")
+				Break  ; "Bad Save? Loaded below stack zone, see value."
+			}
+			lastStacks:=stacks
 			g_IBM.Logger.AddMessage("Offline:" . g_SF.Memory.ReadCurrentZone() . "," . stacks . ",Time:" . A_TickCount - this.offlineSaveTime . ",Attempt:" . retryAttempt . ",OfflineTime:" . g_SF.Memory.ReadOfflineTime() . ",Server:" . g_SF.Memory.IBM_GetWebRootFriendly())
 			this.offlineSaveTime:=-1 ;Flags as not active
-        }
-        g_IBM.PreviousZoneStartTime:=A_TickCount
+		}
+		g_IBM.PreviousZoneStartTime:=A_TickCount
 		generatedStacks:=g_Heroes[58].ReadSBStacks() - startStacks
 		totalTime:=A_TickCount-offlineStartTime
 		if (retryAttempt > maxRetries+1) ;We're a bit screwed at this point, +1 as retryAttempt is really 'tryAttempt'
-        {
+		{
 			g_SharedData.UpdateOutbound("LoopString","Failed to generate target " . targetStacks . " stacks in " . maxRetries . " attempts. Verify settings")
 			g_SharedData.UpdateOutbound("IBM_RunControl_StackString","FAIL: Attempted to stack offline at z" . g_SF.Memory.ReadCurrentZone() . " generating " . generatedStacks . " stacks in " . Round(totalTime/ 1000,2) . "s" . (retryAttempt>1 ? " using " . retryAttempt . " attempts" : ""))
-        }
-        else
+		}
+		else
 		{
 			g_SharedData.UpdateOutbound("IBM_RunControl_StackString","Stacking: Completed offline at z" . g_SF.Memory.ReadCurrentZone() . " generating " . generatedStacks . " stacks in " . Round(totalTime/ 1000,2) . "s" . (retryAttempt>1 ? " using " . retryAttempt . " attempts" : ""))
 		}
-    }
+	}
 
 	StackFarmSetup()
-    {
+	{
 		if (!this.KillCurrentBoss())
-            this.FallBackFromBossZone()
-        this.KEY_W.KeyPress()
-        this.ToggleAutoProgress(0,false,true)
+			this.FallBackFromBossZone()
+		this.KEY_W.KeyPress()
+		this.ToggleAutoProgress(0,false,true)
 		g_IBM.levelManager.LevelFormation("W", "min")
 		this.WaitForTransition(this.KEY_W)
 		StartTime:=A_TickCount
-        ElapsedTime:=0
+		ElapsedTime:=0
 		TimeOut:=5000
-        g_SharedData.UpdateOutbound("LoopString","Setting stack farm formation")
-        while (!g_SF.IsCurrentFormation(g_IBM.levelManager.GetFormation("W")) AND ElapsedTime < TimeOut)
-        {
+		g_SharedData.UpdateOutbound("LoopString","Setting stack farm formation")
+		while (!g_SF.IsCurrentFormation(g_IBM.levelManager.GetFormation("W")) AND ElapsedTime < TimeOut)
+		{
 			this.KEY_W.KeyPress() ;Not using _Bulk as the swap here is a failure mode
-            g_IBM.levelManager.LevelFormation("W", "min") ;Should this be here?
+			g_IBM.levelManager.LevelFormation("W", "min") ;Should this be here?
 			g_IBM.IBM_Sleep(15)
-            ElapsedTime:=A_TickCount - StartTime
-        }
+			ElapsedTime:=A_TickCount - StartTime
+		}
 		if (elapsedTime>=TimeOut)
 			g_IBM.Logger.AddMessage("FAIL: StackFarmSetup() did not set W formation within " . TimeOut . "ms")
-    }
+	}
 
 	KillCurrentBoss(maxLoopTime:=25000)
-    {
-        currentZone := g_SF.Memory.ReadCurrentZone()
-        if mod(currentZone, 5)
-            return 1
-        StartTime := A_TickCount
-        ElapsedTime := 0
-        g_SharedData.UpdateOutbound("LoopString","Killing boss before stacking")
-        while ( !mod( g_SF.Memory.ReadCurrentZone(), 5 ) AND ElapsedTime<maxLoopTime )
-        {
-            ElapsedTime := A_TickCount - StartTime
-            this.SetFormation()
-            if(!g_SF.Memory.ReadQuestRemaining()) ; Quest complete, still on boss zone. Skip boss bag.
-                this.ToggleAutoProgress(1,0,false)
-            g_IBM.IBM_Sleep(50)
-        }
-        if(ElapsedTime >= maxLoopTime)
-            return 0
-        this.WaitForTransition()
-        return 1
-    }
+	{
+		currentZone := g_SF.Memory.ReadCurrentZone()
+		if mod(currentZone, 5)
+			return 1
+		StartTime := A_TickCount
+		ElapsedTime := 0
+		g_SharedData.UpdateOutbound("LoopString","Killing boss before stacking")
+		while ( !mod( g_SF.Memory.ReadCurrentZone(), 5 ) AND ElapsedTime<maxLoopTime )
+		{
+			ElapsedTime := A_TickCount - StartTime
+			this.SetFormation()
+			if(!g_SF.Memory.ReadQuestRemaining()) ; Quest complete, still on boss zone. Skip boss bag.
+				this.ToggleAutoProgress(1,0,false)
+			g_IBM.IBM_Sleep(50)
+		}
+		if(ElapsedTime >= maxLoopTime)
+			return 0
+		this.WaitForTransition()
+		return 1
+	}
 
 	WaitForTransition(KEY:="", maxLoopTime:=5000) ;KEY is a IC_BrivMaster_InputManager_Key_Class object
-    {
-        if !g_SF.Memory.ReadTransitioning()
-            return
-        StartTime:=A_TickCount
-        ;g_SharedData.UpdateOutbound("LoopString","Waiting for transition...") ;Not sure if this will generally be displayed long enough to be useful
-        if (KEY)
+	{
+		if !g_SF.Memory.ReadTransitioning()
+			return
+		StartTime:=A_TickCount
+		;g_SharedData.UpdateOutbound("LoopString","Waiting for transition...") ;Not sure if this will generally be displayed long enough to be useful
+		if (KEY)
 			g_InputManager.gameFocus() ;Set focus once and use _Bulk()
 		while (g_SF.Memory.ReadTransitioning()==1 AND A_TickCount - StartTime < maxLoopTime)
-        {
+		{
 			If (KEY)
 				KEY.KeyPress_Bulk()
 			g_IBM.IBM_Sleep(15)
-        }
-        return
-    }
+		}
+		return
+	}
 
 	FallBackFromBossZone(KEY:="", maxLoopTime:=5000)
-    {
-        fellBack:=false
-        currentZone := g_SF.Memory.ReadCurrentZone()
-        if (Mod(currentZone, 5))
-            return fellBack
-        StartTime:=A_TickCount
-        ElapsedTime:=0
-        g_SharedData.UpdateOutbound("LoopString","Falling back from boss zone")
-        while (!Mod(g_SF.Memory.ReadCurrentZone(), 5) AND ElapsedTime < maxLoopTime)
-        {
-            this.KEY_LEFT.KeyPress()
+	{
+		fellBack:=false
+		currentZone := g_SF.Memory.ReadCurrentZone()
+		if (Mod(currentZone, 5))
+			return fellBack
+		StartTime:=A_TickCount
+		ElapsedTime:=0
+		g_SharedData.UpdateOutbound("LoopString","Falling back from boss zone")
+		while (!Mod(g_SF.Memory.ReadCurrentZone(), 5) AND ElapsedTime < maxLoopTime)
+		{
+			this.KEY_LEFT.KeyPress()
 			fellBack:=true
 			g_IBM.IBM_Sleep(15)
 			ElapsedTime:=A_TickCount - StartTime
-        }
-        this.WaitForTransition(KEY)
-        return fellBack
-    }
+		}
+		this.WaitForTransition(KEY)
+		return fellBack
+	}
 
 	FallBackFromZone(maxLoopTime:=5000)
-    {
-        StartTime:=A_TickCount
-        ElapsedTime:=0
-        while(g_SF.Memory.ReadCurrentZone()==-1 AND ElapsedTime < maxLoopTime)
-        {
+	{
+		StartTime:=A_TickCount
+		ElapsedTime:=0
+		while(g_SF.Memory.ReadCurrentZone()==-1 AND ElapsedTime < maxLoopTime)
+		{
 			g_IBM.IBM_Sleep(15)
 			ElapsedTime:=A_TickCount-StartTime
-        }
-        currentZone:=g_SF.Memory.ReadCurrentZone()
-        StartTime:=A_TickCount
-        ElapsedTime:=0
-        g_SharedData.UpdateOutbound("LoopString","Falling back from zone...")
-        while(!g_SF.Memory.ReadTransitioning() AND ElapsedTime < maxLoopTime)
-        {
-            this.KEY_LEFT.KeyPress()
+		}
+		currentZone:=g_SF.Memory.ReadCurrentZone()
+		StartTime:=A_TickCount
+		ElapsedTime:=0
+		g_SharedData.UpdateOutbound("LoopString","Falling back from zone...")
+		while(!g_SF.Memory.ReadTransitioning() AND ElapsedTime < maxLoopTime)
+		{
+			this.KEY_LEFT.KeyPress()
 			g_IBM.IBM_Sleep(15) ;Sleep as we don't want to go back multiple zones
 			ElapsedTime:=A_TickCount - StartTime
-        }
-        this.WaitForTransition()
-    }
+		}
+		this.WaitForTransition()
+	}
 
 	SetFormation(fastCheck:=false,useHighZone:=false) ;To be called with FastCheck during straightforward progression, e.g. not after stacking, falling back, other fun things. Note we can't always use highZone because when a zone completes, the highzone is momentarily this+1 before the jump applies - if we can find a good check for that we could move over. ReadTransitioning() would appear to work as a test - if true, can use highzone safely, if false then?
-    {
+	{
 		static trustRecent:=false ;Do we believe that the ReadMostRecentFormationFavorite() is respresentative? Needed as it changes even if the formation swap fails
 		if (!fastCheck)
 			trustRecent:=false ;Reset to false for all normal calls
@@ -1099,8 +1099,8 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 		Thread, NoTimers ;Here to handle the animation skip, maybe isn't needed for feat swap as a result?
 		benchReturn:=this.BenchBrivConditions(isEZone) ;check to bench briv
 		lastFormation:=g_SF.Memory.ReadMostRecentFormationFavorite() ;New Sep25 read, used in all cases as it is part of the bad formation check
-        if (benchReturn AND lastFormation!=3) ;New Sep25 read. Formation 3 is E
-        {
+		if (benchReturn AND lastFormation!=3) ;New Sep25 read. Formation 3 is E
+		{
 			this.KEY_E.KeyPress()
 			if (benchReturn==2)
 			{
@@ -1121,15 +1121,15 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 			}
 			Thread, NoTimers, False
 			return
-        }
+		}
 		else
 			Thread, NoTimers, False
 		;check to unbench briv
-        if (this.UnBenchBrivConditions(isEZone) AND lastFormation!=1) ;Formation 1 is Q
-        {
+		if (this.UnBenchBrivConditions(isEZone) AND lastFormation!=1) ;Formation 1 is Q
+		{
 			this.KEY_Q.KeyPress()
 			return
-        }
+		}
 		if (trustRecent AND fastCheck)
 		{
 			if !(lastFormation==1 OR lastFormation==3)
@@ -1142,33 +1142,33 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 			else
 				trustRecent:=true ;As we've checked we're on Q or E via formation read, we should be in normal progression
 		}
-    }
+	}
 
 	 ;Should be benched based on game conditions. As part of drift checking, return as follows:
 	 ;0 - as false before, do not bench
 	 ;1 - as true before for most conditions, bench
 	 ;2 - bench for animation override
-    BenchBrivConditions(isEZone)
-    {
+	BenchBrivConditions(isEZone)
+	{
 		;ReadTransitionDirection() 		| 0 = Static (instant), 1 = Forward, 2 = Backward, 3=JumpDown, 4=FallDown
 		;ReadFormationTransitionDir() 	| 0 = OnFromLeft, 1 = OnFromRight, 2 = OnFromTop, 3 = OffToLeft, 4 = OffToRight, 5 = OffToBottom
 		if (this.zonesPerJumpE == 1 AND g_SF.Memory.ReadTransitionDirection() == 1 AND g_SF.Memory.ReadFormationTransitionDir() == 4 )
 			return 2
-        if (isEZone)
+		if (isEZone)
 			return 1
-        return 0
-    }
+		return 0
+	}
 
-    UnBenchBrivConditions(isEZone) ;True/False on whether Briv should be unbenched based on game conditions.
-    {
-        if (isEZone)
-            return false
+	UnBenchBrivConditions(isEZone) ;True/False on whether Briv should be unbenched based on game conditions.
+	{
+		if (isEZone)
+			return false
 		if (this.zonesPerJumpE > 1) ;Don't do transition-based checks when feat swapping
 			return true ;Not a walk zone so go to Q
 		if (g_SF.Memory.ReadFormationTransitionDir()!=4) ;if transition direction is not "OffToRight"
 			return true
-        return false
-    }
+		return false
+	}
 
 	ShouldWalk(zone)
 	{
@@ -1294,34 +1294,34 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 	}
 
 	; IsToggled is 0 for off or 1 for on. ForceToggle always hits G. ForceState will press G until AutoProgress is read as on (<5s).
-    ToggleAutoProgress( isToggled := 1, forceToggle := false, forceState := false )
-    {
-        Critical, On
-        StartTime:=A_TickCount
-        if ( forceToggle )
-            this.KEY_autoProgress.KeyPress()
-        if ( g_SF.Memory.ReadAutoProgressToggled() != isToggled )
-            this.KEY_autoProgress.KeyPress() ;Irisiri: If forceToggle is true, this will be a 2nd press without giving the game a chance to process?
-        while ( g_SF.Memory.ReadAutoProgressToggled() != isToggled AND forceState AND A_TickCount - StartTime < 1000 )
-        {
-            this.KEY_autoProgress.KeyPress_Bulk()
+	ToggleAutoProgress( isToggled := 1, forceToggle := false, forceState := false )
+	{
+		Critical, On
+		StartTime:=A_TickCount
+		if ( forceToggle )
+			this.KEY_autoProgress.KeyPress()
+		if ( g_SF.Memory.ReadAutoProgressToggled() != isToggled )
+			this.KEY_autoProgress.KeyPress() ;Irisiri: If forceToggle is true, this will be a 2nd press without giving the game a chance to process?
+		while ( g_SF.Memory.ReadAutoProgressToggled() != isToggled AND forceState AND A_TickCount - StartTime < 1000 )
+		{
+			this.KEY_autoProgress.KeyPress_Bulk()
 			g_IBM.IBM_Sleep(15)
-        }
-        Critical, Off
-    }
+		}
+		Critical, Off
+	}
 	
 	StartAutoProgressSoft() ;Simplified autoprogress submission for optimising exit from stacking
 	{
 		if (g_SF.Memory.ReadAutoProgressToggled()!=1)
-            this.KEY_autoProgress.KeyPress()
+			this.KEY_autoProgress.KeyPress()
 	}
 
 	InitZone()
-    {
-        g_IBM.levelManager.LevelClickDamage()
-        this.StartAutoProgressSoft()
-        g_IBM.PreviousZoneStartTime:=A_TickCount
-    }
+	{
+		g_IBM.levelManager.LevelClickDamage()
+		this.StartAutoProgressSoft()
+		g_IBM.PreviousZoneStartTime:=A_TickCount
+	}
 }
 
 

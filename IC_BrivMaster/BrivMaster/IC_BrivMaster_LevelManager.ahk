@@ -87,7 +87,7 @@ class IC_BrivMaster_LevelManager_Class ;A class for managing champion levelling
 	}
 
 	LevelClickDamage(timeout:=500) ;Default 500ms should be good for a min of 3 upgrades, being 300 levels on x100, which should be enough even going 300 zones with Thellora
-    {
+	{
 		startTime:=A_TickCount
 		clickTarget:=this.GetClickDamageTargetLevel()
 		while (g_SF.Memory.ReadClickLevel() < clickTarget AND g_SF.Memory.IBM_ReadClickLevelUpAllowed() > 0 AND A_TickCount - startTime < timeout)
@@ -95,7 +95,7 @@ class IC_BrivMaster_LevelManager_Class ;A class for managing champion levelling
 			this.KEY_ClickDmg.KeyPress() ;No value in trying to build this to be able to use _Bulk() as it will mostly only be one press at a time
 			DllCall("Sleep", "UInt", 0)
 		}
-    }
+	}
 
 	SetupFailedConversion()
 	{
@@ -125,25 +125,25 @@ class IC_BrivMaster_LevelManager_Class ;A class for managing champion levelling
 	}
 
 	ExtractFormation(slot,index) ;Extracts both the usual formation and the champ list in one go
-    {
-        this.savedFormations[index]:={}
+	{
+		this.savedFormations[index]:={}
 		this.savedFormationChamps[index]:={}
-        size:=g_SF.Memory.GameManager.game.gameInstances[0].FormationSaveHandler.formationSavesV2[slot].Formation.size.Read()
-        if(size <= 0 OR size > 500) ;Sanity check
-            return ""
-        loop, %size%
-        {
+		size:=g_SF.Memory.GameManager.game.gameInstances[0].FormationSaveHandler.formationSavesV2[slot].Formation.size.Read()
+		if(size <= 0 OR size > 500) ;Sanity check
+			return ""
+		loop, %size%
+		{
 			champID:=g_SF.Memory.GameManager.game.gameInstances[0].FormationSaveHandler.formationSavesV2[slot].Formation[A_Index - 1].Read()
 			this.savedFormations[index].Push(champID)
 			if (champID != -1)
-            {
-                this.savedFormationChamps[index,champID]:=true
+			{
+				this.savedFormationChamps[index,champID]:=true
 				if(index=="W" AND !this.savedFormationChamps["A"].HasKey(champID)) ;For W, if the champion is not yet read in they are unique to W, which we want to check for fast placement with only stackinging
 					this.savedFormationChamps["XW",champID]:=true ;eXclusive W
 				this.savedFormationChamps["A",champID]:=true ;"A" is a meta-list of all champions in use
-            }
-        }
-    }
+			}
+		}
+	}
 
 	GetFormation(index) ;Returns saved formation by key, eg "Q", the modron formation "M"
 	{
@@ -361,22 +361,22 @@ class IC_BrivMaster_LevelManager_WorkList_Class ;A class to manage the processin
 	{
 		StartTime:=A_TickCount
 		while (!g_SF.Memory.ReadAreaActive() AND A_TickCount - StartTime < 10000 )
-        {
+		{
 			Sleep 0
-        }
+		}
 	}
 
-    WaitForFirstGold(checkSeat)
-    {
-        StartTime := A_TickCount
+	WaitForFirstGold(checkSeat)
+	{
+		StartTime := A_TickCount
 		gold:=g_SF.Memory.IBM_ReadGoldFirst8BytesBySeat(checkSeat) ;Reading the first 8 bytes is sufficent since the test is just for 0, and x^y==0 is true iff x==0
 		while ((gold==0 OR gold=="") AND A_TickCount - StartTime < 10000 ) ;Note that the seat gold value will be null whilst the new run gets set up by the game
-        {
+		{
 			Sleep 0
 			gold:=g_SF.Memory.IBM_ReadGoldFirst8BytesBySeat(checkSeat)
-        }
+		}
 		return gold>0
-    }
+	}
 
 	GetKeyList(maxKeyPresses,byRef keyList100,byRef keyList10,forcePriority) ;Populates the 2 provided keylists. If forcePriority=true then all priority > 1 champions will be added regardless of maxKeyPresses. TODO: Can this continue to count up champions with prio > 0 to allow us to do the IsPriorityDone check here instead of as a separate loop? Note that keyList10 may now be x10 or x25
 	{

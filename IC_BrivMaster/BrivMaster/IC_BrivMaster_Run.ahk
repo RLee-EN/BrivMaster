@@ -5,7 +5,7 @@ SetWorkingDir %A_ScriptDir%
 SetWinDelay, 33 ; Sets the delay that will occur after each windowing command, such as WinActivate. (Default is 100)
 SetControlDelay, 0 ; Sets the delay that will occur after each control-modifying command. -1 for no delay, 0 for smallest possible delay. The default delay is 20.
 SetBatchLines, -1 ; How fast a script will run (affects CPU utilization).(Default setting is 10ms - prevent the script from using any more than 50% of an idle CPU's time.
-                  ; This allows scripts to run quickly while still maintaining a high level of cooperation with CPU sensitive tasks such as games and video capture/playback.
+				  ; This allows scripts to run quickly while still maintaining a high level of cooperation with CPU sensitive tasks such as games and video capture/playback.
 ListLines Off
 Process, Priority,, High
 CoordMode, Mouse, Client
@@ -36,15 +36,15 @@ g_IBM.CreateWindow()
 
 if(A_Args[1])
 {
-    ObjRegisterActive(g_SharedData, A_Args[1])
-    g_SF.WriteObjectToAHKJSON(A_LineFile . "\..\LastGUID_IBM_GemFarm.json", A_Args[1])
+	ObjRegisterActive(g_SharedData, A_Args[1])
+	g_SF.WriteObjectToAHKJSON(A_LineFile . "\..\LastGUID_IBM_GemFarm.json", A_Args[1])
 }
 else
 {
-    GuidCreate:=ComObjCreate("Scriptlet.TypeLib")
-    guid:=GuidCreate.Guid
-    ObjRegisterActive(g_SharedData, guid)
-    g_SF.WriteObjectToAHKJSON(A_LineFile . "\..\LastGUID_IBM_GemFarm.json", guid)
+	GuidCreate:=ComObjCreate("Scriptlet.TypeLib")
+	guid:=GuidCreate.Guid
+	ObjRegisterActive(g_SharedData, guid)
+	g_SF.WriteObjectToAHKJSON(A_LineFile . "\..\LastGUID_IBM_GemFarm.json", guid)
 }
 
 g_IBM.GemFarm()
@@ -53,19 +53,19 @@ OnExit(ComObjectRevoke())
 
 ComObjectRevoke()
 {
-    ObjRegisterActive(g_SharedData, "")
-    ExitApp
+	ObjRegisterActive(g_SharedData, "")
+	ExitApp
 }
 
 IBM_GemFarmGuiClose()
 {
-    MsgBox, 35, Close, Really close the gem farm script? `n`nWarning: This script is required for gem farming. `n"Yes" will close the gem farm script. `n"No" will minimise the script to the tray.`nYou can open it again by pressing the play button at the top of Briv Master Home.
-    IfMsgBox, Yes
-        ExitApp
-    IfMsgBox, No
-        Gui, IBM_GemFarm:Hide
-    IfMsgBox, Cancel
-        return true
+	MsgBox, 35, Close, Really close the gem farm script? `n`nWarning: This script is required for gem farming. `n"Yes" will close the gem farm script. `n"No" will minimise the script to the tray.`nYou can open it again by pressing the play button at the top of Briv Master Home.
+	IfMsgBox, Yes
+		ExitApp
+	IfMsgBox, No
+		Gui, IBM_GemFarm:Hide
+	IfMsgBox, Cancel
+		return true
 }
 
 ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -73,20 +73,20 @@ IBM_GemFarmGuiClose()
 class IC_BrivMaster_GemFarm_Class
 {
 	GemFarm()
-    {
-        static lastResetCount:=0
-        this.TriggerStart:=true
-        DllCall("QueryPerformanceFrequency", "Int64*", PerformanceCounterFrequency) ;Get the performance counter frequency once as it cannot change
+	{
+		static lastResetCount:=0
+		this.TriggerStart:=true
+		DllCall("QueryPerformanceFrequency", "Int64*", PerformanceCounterFrequency) ;Get the performance counter frequency once as it cannot change
 		this.CounterFrequency:=PerformanceCounterFrequency/1000 ;Convert from seconds to milliseconds as that is our main interest
 		this.GameMaster:=New IC_BrivMaster_GameMaster_Class() ;This does the initial OpenProcessReader() call
 		this.RefreshImportCheck() ;Does the initial population of the import check
 		g_ServerCall.Update()
-        g_Heroes:=New IC_BrivMaster_Heroes_Class() ;Global to allow consitency between uses in main script and hub (e.g. Ellywick for gold farming). We have to wait with initalising it until memory reads are available, however TODO: More reason for bringing some order to initial startup
+		g_Heroes:=New IC_BrivMaster_Heroes_Class() ;Global to allow consitency between uses in main script and hub (e.g. Ellywick for gold farming). We have to wait with initalising it until memory reads are available, however TODO: More reason for bringing some order to initial startup
 		this.Logger:=New IC_BrivMaster_Logger_Class(A_LineFile . "\..\..\Logs\")
 		this.LevelManager:=New IC_BrivMaster_LevelManager_Class() ;Must be before the PreFlightCheck() call as we use the formation data the LevelManager loads
 		this.RouteMaster:=New IC_BrivMaster_RouteMaster_Class(g_IBM_Settings["IBM_Route_Combine"],this.Logger.logBase)
 		if (!this.PreFlightCheck()) ; Did not pass pre flight check.
-            return false
+			return false
 		this.offRamp:=false ;Flag when approaching the end of a run for missed-reset detection
 		this.EllywickCasino:=New IC_BrivMaster_EllywickCasino_Class()
 		this.DialogSwatter:=New IC_BrivMaster_DialogSwatter_Class()
@@ -95,11 +95,11 @@ class IC_BrivMaster_GemFarm_Class
 		g_SharedData.UpdateOutbound("IBM_BuyChests",false)
 		this.PreviousZoneStartTime:=A_TickCount ;TODO: These 5 variables are for CheckifStuck, could maybe using encapsulating somewhere else (simple object for it?)
 		this.CheckifStuck_lastCheck:=0
-        this.CheckifStuck_fallBackTries:=0
+		this.CheckifStuck_fallBackTries:=0
 		this.CheckifStuck_Timeout_Toggle:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Stuck"]*0.5) ;30s at default 60s
 		this.CheckifStuck_Timeout_Fallback:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Stuck"]*0.75) ;45s at default 60s
 		Loop
-        {
+		{
 			this.currentZone:=g_SF.Memory.ReadCurrentZone() ;Class level variable so it can be reset during rollbacks TODO: Move to RouteMaster
 			if (this.currentZone=="")
 				this.GameMaster.SafetyCheck()
@@ -117,7 +117,7 @@ class IC_BrivMaster_GemFarm_Class
 				}
 			}
 			if (this.TriggerStart) ;First loop
-            {
+			{
 				g_SharedData.UpdateOutbound("IBM_BuyChests",false)
 				if (g_SharedData.BossesHitThisRun)
 				{
@@ -130,19 +130,19 @@ class IC_BrivMaster_GemFarm_Class
 				this.offRamp:=false ;TODO: There's a lot of resetting that could probably be wrapped together. Or possibly this whole block carved out
 				this.failedConversionMode:=false
 				this.levelManager.Reset()
-                this.RouteMaster.Reset()
+				this.RouteMaster.Reset()
 				this.EllywickCasino.Reset()
 				this.IBM_FirstZone(this.currentZone)
-                lastResetCount:=g_SF.Memory.ReadResetsCount()
+				lastResetCount:=g_SF.Memory.ReadResetsCount()
 				if (!this.RouteMaster.ExpectingGameRestart() OR this.RouteMaster.cycleMax==1) ;When running hybrid don't do standard online chests during offline runs as there will be an early save when closing the game. Without hybrid we don't have a choice
 					g_SharedData.UpdateOutbound("IBM_BuyChests",true)
-                this.PreviousZoneStartTime:=A_TickCount
+				this.PreviousZoneStartTime:=A_TickCount
 				this.TriggerStart:=false
 				DllCall("QueryPerformanceCounter", "Int64*", lastLoopEndTime) ;Set for the first loop
 				g_SharedData.UpdateOutbound("LoopString","Main Loop")
-                this.previousZone:=this.currentZone ;Update these as we may have progressed during first-zone logic. Previous zone is an object variable so it can be reset if a fallback is detected TODO: This should be in the RouteMaster
+				this.previousZone:=this.currentZone ;Update these as we may have progressed during first-zone logic. Previous zone is an object variable so it can be reset if a fallback is detected TODO: This should be in the RouteMaster
 				this.currentZone:=g_SF.Memory.ReadCurrentZone()
-            }
+			}
 			g_SharedData.UpdateOutbound("LoopString","Main Loop")
 			if (g_SF.Memory.ReadResetting())
 			{
@@ -186,12 +186,12 @@ class IC_BrivMaster_GemFarm_Class
 				this.Logger.ResetReached()
 				g_SharedData.UpdateOutbound("LoopString","Pending modron reset")
 			}
-            this.CheckifStuck() ;Does not need to set TriggerStart as any exit that would require it will also call RestartAdventure() which sets it to true
+			this.CheckifStuck() ;Does not need to set TriggerStart as any exit that would require it will also call RestartAdventure() which sets it to true
 			;Loop frequency check
 			this.IBM_SleepOffset(lastLoopEndTime,30)
 			DllCall("QueryPerformanceCounter", "Int64*", lastLoopEndTime)
 		}
-    }
+	}
 
 	WaitForZoneLoad(currentZone) ;Waits for a valid zone. Used because force restarts seem to go into the main loop before the game has loaded z1. Note that this doesn't mean that the zone is active (per g_SF.Memory.ReadAreaActive())
 	{
@@ -284,13 +284,13 @@ class IC_BrivMaster_GemFarm_Class
 	}
 	
 	DoRushWait(stopProgress:=false) ;Wait for Thellora (ID=139) to activate her Rush ability. TODO: unknown what ReadRushTriggered() returns if she starts with 0 stacks or we have 0 favour (with the former being the case that might matter)
-    {
-        elapsedTime:=0
+	{
+		elapsedTime:=0
 		levelTypeChampions:=true ;Alternate levelling types to cover both without taking too long in each loop
 		g_SharedData.UpdateOutbound("LoopString","Rush Wait")
 		startTime:=A_TickCount
 		while(!(g_SF.Memory.ReadCurrentZone()>1 OR g_Heroes[139].ReadRushTriggered()) AND elapsedTime < 8000)
-        {
+		{
 			if(stopProgress) ;If we are doing Elly's casino after the rush we need to stop ASAP so that 1 kill doesn't jump us an extra time, possibly on the wrong formation
 			{
 				if(g_SF.Memory.ReadHighestZone()>1)
@@ -303,45 +303,45 @@ class IC_BrivMaster_GemFarm_Class
 				this.levelManager.LevelWorklist() ;Level current worklist
 			else
 				this.levelManager.LevelClickDamage(0) ;Level click damage
-            levelTypeChampions:=!levelTypeChampions
+			levelTypeChampions:=!levelTypeChampions
 			elapsedTime:=A_TickCount-startTime
-        }
-    }
+		}
+	}
 
-    CheckifStuck() ;Check if stuck based on the g_IBM_Settings["IBM_Timeout_Static_Stuck"] setting TODO: This logic needs a review, with some running multiple times when it probably doesn't need to?
-    {
+	CheckifStuck() ;Check if stuck based on the g_IBM_Settings["IBM_Timeout_Static_Stuck"] setting TODO: This logic needs a review, with some running multiple times when it probably doesn't need to?
+	{
 		dtCurrentZoneTime:=A_TickCount - this.PreviousZoneStartTime
 		if (dtCurrentZoneTime<=this.CheckifStuck_Timeout_Toggle) ;No action up to default 30s
 			return false
-        else if (dtCurrentZoneTime>this.CheckifStuck_Timeout_Toggle AND dtCurrentZoneTime<=this.CheckifStuck_Timeout_Fallback AND dtCurrentZoneTime - this.CheckifStuck_lastCheck > 3000) ;Default 30 to 45s, toggle progress every 3s
-        {
-            this.RouteMaster.ToggleAutoProgress(1, true)
-            if(dtCurrentZoneTime<this.CheckifStuck_Timeout_Fallback-3000) ;TODO: What purpose does this serve? To avoid interfering with the next check block?
-                this.CheckifStuck_lastCheck:=dtCurrentZoneTime
-        }
-        if (dtCurrentZoneTime>this.CheckifStuck_Timeout_Fallback AND this.CheckifStuck_fallBackTries < 3 AND dtCurrentZoneTime - this.CheckifStuck_lastCheck>10000) ;Default 45s, fall back to previous zone and try to continue
-        {
+		else if (dtCurrentZoneTime>this.CheckifStuck_Timeout_Toggle AND dtCurrentZoneTime<=this.CheckifStuck_Timeout_Fallback AND dtCurrentZoneTime - this.CheckifStuck_lastCheck > 3000) ;Default 30 to 45s, toggle progress every 3s
+		{
+			this.RouteMaster.ToggleAutoProgress(1, true)
+			if(dtCurrentZoneTime<this.CheckifStuck_Timeout_Fallback-3000) ;TODO: What purpose does this serve? To avoid interfering with the next check block?
+				this.CheckifStuck_lastCheck:=dtCurrentZoneTime
+		}
+		if (dtCurrentZoneTime>this.CheckifStuck_Timeout_Fallback AND this.CheckifStuck_fallBackTries < 3 AND dtCurrentZoneTime - this.CheckifStuck_lastCheck>10000) ;Default 45s, fall back to previous zone and try to continue
+		{
 			;Reset memory values in case they missed an update.
-            this.GameMaster.Hwnd:=WinExist("ahk_exe " . g_IBM_Settings["IBM_Game_Exe"]) ;TODO: This can screw things up if the there is more than one process open. At least align with .PID?
-            g_SF.Memory.OpenProcessReader()
-            g_ServerCall.Update()
-            this.RouteMaster.FallBackFromZone() ;Try a fall back
-            this.RouteMaster.SetFormation()
-            this.RouteMaster.ToggleAutoProgress(1, true)
-            this.CheckifStuck_lastCheck:=dtCurrentZoneTime
-            this.CheckifStuck_fallBackTries++
-        }
-        if (dtCurrentZoneTime>g_IBM_Settings["IBM_Timeout_Static_Stuck"]) ;After default 60s, restart
-        {
+			this.GameMaster.Hwnd:=WinExist("ahk_exe " . g_IBM_Settings["IBM_Game_Exe"]) ;TODO: This can screw things up if the there is more than one process open. At least align with .PID?
+			g_SF.Memory.OpenProcessReader()
+			g_ServerCall.Update()
+			this.RouteMaster.FallBackFromZone() ;Try a fall back
+			this.RouteMaster.SetFormation()
+			this.RouteMaster.ToggleAutoProgress(1, true)
+			this.CheckifStuck_lastCheck:=dtCurrentZoneTime
+			this.CheckifStuck_fallBackTries++
+		}
+		if (dtCurrentZoneTime>g_IBM_Settings["IBM_Timeout_Static_Stuck"]) ;After default 60s, restart
+		{
 			this.GameMaster.RestartAdventure("Game is stuck z[" . g_SF.Memory.ReadCurrentZone() . "]" )
-            this.GameMaster.SafetyCheck()
-            this.PreviousZoneStartTime:=A_TickCount
-            this.CheckifStuck_lastCheck:=0
-            this.CheckifStuck_fallBackTries:=0
-            return true
-        }
-        return false
-    }
+			this.GameMaster.SafetyCheck()
+			this.PreviousZoneStartTime:=A_TickCount
+			this.CheckifStuck_lastCheck:=0
+			this.CheckifStuck_fallBackTries:=0
+			return true
+		}
+		return false
+	}
 
 	RollBackAction(returnZone) ;Actions to take once a rollback is detected, separate function as needed for normal re-opens and for restarts
 	{
@@ -354,43 +354,43 @@ class IC_BrivMaster_GemFarm_Class
 	}
 	
 	ModronResetCheck() 	;Waits for modron to reset. Closes IC if it fails.
-    {
-        if(this.WaitForModronReset(g_IBM_Settings["IBM_Timeout_Static_Reset"])) ;Don't use timeout factor here as this isn't related to host performance
+	{
+		if(this.WaitForModronReset(g_IBM_Settings["IBM_Timeout_Static_Reset"])) ;Don't use timeout factor here as this isn't related to host performance
 			this.TriggerStart:=true ;For some users the modron core reset count doesn't always increase post reset, despite my PC and tablet both working reliably. It might be a connectivity issue as it appears to be done by the server
 		else
-        {
-            this.GameMaster.RestartAdventure("Modron reset timed out z[" . g_SF.Memory.ReadCurrentZone() . "]",true) ;true flags this as a modron reset restart, where we should try and return to the adventure we're in if the server appears to be down
-            this.GameMaster.SafetyCheck()
-            this.CheckifStuck_lastCheck:=0 ;This used to be done by passing a 'force' option to CheckifStuck(), which seemed clunky - but we still need to reset these as we are no longer stuck. Or at least we hope not. TODO: Make a stuck-checker object to contain this stuff?
-            this.CheckifStuck_fallBackTries:=0
+		{
+			this.GameMaster.RestartAdventure("Modron reset timed out z[" . g_SF.Memory.ReadCurrentZone() . "]",true) ;true flags this as a modron reset restart, where we should try and return to the adventure we're in if the server appears to be down
+			this.GameMaster.SafetyCheck()
+			this.CheckifStuck_lastCheck:=0 ;This used to be done by passing a 'force' option to CheckifStuck(), which seemed clunky - but we still need to reset these as we are no longer stuck. Or at least we hope not. TODO: Make a stuck-checker object to contain this stuff?
+			this.CheckifStuck_fallBackTries:=0
 		}
 		this.PreviousZoneStartTime:=A_TickCount
-    }
+	}
 	
 	WaitForModronReset()
-    {
-        StartTime:=A_TickCount
-        ElapsedTime:=0
-        g_SharedData.UpdateOutbound("LoopString","Modron Resetting...")
-        g_ServerCall.UpdateStackData()
+	{
+		StartTime:=A_TickCount
+		ElapsedTime:=0
+		g_SharedData.UpdateOutbound("LoopString","Modron Resetting...")
+		g_ServerCall.UpdateStackData()
 		if(g_serverCall.ShouldCallPreventStackFail()) ;Only try and manually save if it hasn't already happened
 			g_serverCall.CallPreventStackFail("WaitForModronReset()",true)
-        while (g_SF.Memory.ReadResetting() AND ElapsedTime < timeout)
-        {
-            this.IBM_Sleep(20)
-            ElapsedTime:=A_TickCount - StartTime
-        }
-        g_SharedData.UpdateOutbound("LoopString", "Loading z1...")
+		while (g_SF.Memory.ReadResetting() AND ElapsedTime < timeout)
+		{
+			this.IBM_Sleep(20)
+			ElapsedTime:=A_TickCount - StartTime
+		}
+		g_SharedData.UpdateOutbound("LoopString", "Loading z1...")
 		this.IBM_Sleep(100) ;20ms is not sufficent for this for all users. Was 50ms in BGF, but looks like the loading part of the reset takes >1s in reality, so using 100ms is a safe play without any performance concerns
-        while(!g_SF.Memory.ReadUserIsInited() AND g_SF.Memory.ReadCurrentZone()<1 AND ElapsedTime<timeout)
-        {
-            this.IBM_Sleep(20)
-            ElapsedTime:=A_TickCount - StartTime
-        }
-        if (ElapsedTime>=timeout)
+		while(!g_SF.Memory.ReadUserIsInited() AND g_SF.Memory.ReadCurrentZone()<1 AND ElapsedTime<timeout)
+		{
+			this.IBM_Sleep(20)
+			ElapsedTime:=A_TickCount - StartTime
+		}
+		if (ElapsedTime>=timeout)
 			return false
-        return true
-    }
+		return true
+	}
 	
 	IBM_Sleep(sleepTime) ;A more accurate sleep. Relevant for any short sleep (<100ms?)
 	{
@@ -425,8 +425,8 @@ class IC_BrivMaster_GemFarm_Class
 	}
 
 	;START PRE-FLIGHT CHECK
-    PreFlightCheck() ;TODO: Pack some of this into functions - it's getting a bit large
-    {
+	PreFlightCheck() ;TODO: Pack some of this into functions - it's getting a bit large
+	{
 		;Check for active adventure
 		if(this.GameMaster.CurrentAdventure=="" OR this.GameMaster.CurrentAdventure<=0)
 		{
@@ -471,7 +471,7 @@ class IC_BrivMaster_GemFarm_Class
 		}
 		;Check Briv is saved in the expected formations
 		brivInM:=g_Heroes[58].inM
-        brivInQ:=g_Heroes[58].inQ
+		brivInQ:=g_Heroes[58].inQ
 		brivInW:=g_Heroes[58].inW
 		brivInE:=g_Heroes[58].inE ;Briv should be present in E if and only if we are feat swapping
 		if (!brivInM OR !brivInQ OR !brivInW OR (this.RouteMaster.IsFeatSwap() != brivInE))
@@ -498,14 +498,14 @@ class IC_BrivMaster_GemFarm_Class
 		familiarCountQ:=g_SF.Memory.IBM_GetFormationFieldFamiliarCountBySlot(g_SF.Memory.GetSavedFormationSlotByFavorite(1))
 		familiarCountW:=g_SF.Memory.IBM_GetFormationFieldFamiliarCountBySlot(g_SF.Memory.GetSavedFormationSlotByFavorite(2))
 		familiarCountE:=g_SF.Memory.IBM_GetFormationFieldFamiliarCountBySlot(g_SF.Memory.GetSavedFormationSlotByFavorite(3))
-        if (familiarCountM=="" OR familiarCountQ=="" OR familiarCountW=="" OR familiarCountE=="") ;Check for bad reads
+		if (familiarCountM=="" OR familiarCountQ=="" OR familiarCountW=="" OR familiarCountE=="") ;Check for bad reads
 		{
 			errorMsg:="Familiars in saved formations could not be checked`n"
 			errorMsg.=this.PreFlightCheck_GenericMessage()
 			this.PreFlightErrorMessage("Familiars",errorMsg)
 			return false
 		}
-        if (familiarCountM==0 OR familiarCountQ==0 OR familiarCountW>0 OR familiarCountE==0) ;Check for the minimum viable config - failing this check causes an abort
+		if (familiarCountM==0 OR familiarCountQ==0 OR familiarCountW>0 OR familiarCountE==0) ;Check for the minimum viable config - failing this check causes an abort
 		{
 			errorMsg:="Familiars in saved formations are not as expected:`n"
 			errorMsg.="M	Expected: 3	Saved: " . familiarCountM . "`n"
@@ -524,7 +524,7 @@ class IC_BrivMaster_GemFarm_Class
 			errorMsg.="E	Expected: 3	Saved: " . familiarCountE . " (Feat Swap)`n"
 			errorMsg.="Do you wish to continue?"
 			this.PreFlightErrorMessage("Familiars",errorMsg,32+4) ;32 is Question, 4 is Yes/No
-            IfMsgBox, No
+			IfMsgBox, No
 				return false
 		}
 		;Check Modron automation is active
@@ -622,15 +622,15 @@ class IC_BrivMaster_GemFarm_Class
 				}
 			}
 		}
-        return true
-    }
+		return true
+	}
 
 	PreFlightCheck_GenericMessage() ;Generic error text for PreFlightCheck() errors that might relate to reading from the game
 	{
-        genericMsg:="`nOther potential solutions:`n"
-        genericMsg.="1. Be sure Imports are up to date. Current imports are for: v" . g_SF.Memory.GetImportsVersion() . "`n"
-        genericMsg.="2. If IC is running with admin privileges, then the script will also require admin privileges.`n"
-        genericMsg.="3. AHK must be 64-bit. (Currently " . (A_PtrSize = 4 ? 32 : 64) . "-bit)"
+		genericMsg:="`nOther potential solutions:`n"
+		genericMsg.="1. Be sure Imports are up to date. Current imports are for: v" . g_SF.Memory.GetImportsVersion() . "`n"
+		genericMsg.="2. If IC is running with admin privileges, then the script will also require admin privileges.`n"
+		genericMsg.="3. AHK must be 64-bit. (Currently " . (A_PtrSize = 4 ? 32 : 64) . "-bit)"
 		return genericMsg
 	}
 
@@ -651,7 +651,7 @@ class IC_BrivMaster_GemFarm_Class
 		}
 		Gui, IBM_GemFarm:New, -Resize -MaximizeBox
 		Gui, IBM_GemFarm:Color, % Format("{:#x}", g_IBM_Settings["IBM_Theme_Current","WindowBackground"])
-        Gui, IBM_GemFarm:Font, % "c" . Format("{:#x}", g_IBM_Settings["IBM_Theme_Current","DefaultText"]) . " w400 s8", Microsoft Sans Serif
+		Gui, IBM_GemFarm:Font, % "c" . Format("{:#x}", g_IBM_Settings["IBM_Theme_Current","DefaultText"]) . " w400 s8", Microsoft Sans Serif
 		FormatTime, formattedDateTime,,% g_IBM_Settings["IBM_Format_Date_Display"]
 		Gui IBM_GemFarm:Add, Text, w95 xm+1, % "Gem Farm Started:"
 		Gui IBM_GemFarm:Add, Text, w105 x+3, % formattedDateTime
@@ -709,45 +709,45 @@ class IC_BrivMaster_GemFarm_Class
 }
 
 /*
-    ObjRegisterActive(Object, CLSID, Flags:=0)
-    
-        Registers an object as the active object for a given class ID.
-        Requires AutoHotkey v1.1.17+; may crash earlier versions.
-    
-    Object:
-            Any AutoHotkey object.
-    CLSID:
-            A GUID or ProgID of your own making.
-            Pass an empty string to revoke (unregister) the object.
-    Flags:
-            One of the following values:
-              0 (ACTIVEOBJECT_STRONG)
-              1 (ACTIVEOBJECT_WEAK)
-            Defaults to 0.
-    
-    Related:
-        http://goo.gl/KJS4Dp - RegisterActiveObject
-        http://goo.gl/no6XAS - ProgID
-        http://goo.gl/obfmDc - CreateGUID()
+	ObjRegisterActive(Object, CLSID, Flags:=0)
+	
+		Registers an object as the active object for a given class ID.
+		Requires AutoHotkey v1.1.17+; may crash earlier versions.
+	
+	Object:
+			Any AutoHotkey object.
+	CLSID:
+			A GUID or ProgID of your own making.
+			Pass an empty string to revoke (unregister) the object.
+	Flags:
+			One of the following values:
+			  0 (ACTIVEOBJECT_STRONG)
+			  1 (ACTIVEOBJECT_WEAK)
+			Defaults to 0.
+	
+	Related:
+		http://goo.gl/KJS4Dp - RegisterActiveObject
+		http://goo.gl/no6XAS - ProgID
+		http://goo.gl/obfmDc - CreateGUID()
 */
 ObjRegisterActive(Object, CLSID, Flags:=0) ;TODO: This should not be floating around at the end of this file
 {
-    static cookieJar:={}
-    if (!CLSID)
+	static cookieJar:={}
+	if (!CLSID)
 	{
-        if (cookie:=cookieJar.Remove(Object))!=""
-            DllCall("oleaut32\RevokeActiveObject", "uint", cookie, "ptr", 0)
-        return
-    }
-    if cookieJar[Object]
-        throw Exception("Object is already registered", -1)
-    VarSetCapacity(_clsid, 16, 0)
-    if (hr:=DllCall("ole32\CLSIDFromString", "wstr", CLSID, "ptr", &_clsid))<0
-        throw Exception("Invalid CLSID", -1, CLSID)
-    hr:=DllCall("oleaut32\RegisterActiveObject"
-        , "ptr", &Object, "ptr", &_clsid, "uint", Flags, "uint*", cookie
-        , "uint")
-    if hr<0
-        throw Exception(format("Error 0x{:x}", hr), -1)
-    cookieJar[Object]:=cookie
+		if (cookie:=cookieJar.Remove(Object))!=""
+			DllCall("oleaut32\RevokeActiveObject", "uint", cookie, "ptr", 0)
+		return
+	}
+	if cookieJar[Object]
+		throw Exception("Object is already registered", -1)
+	VarSetCapacity(_clsid, 16, 0)
+	if (hr:=DllCall("ole32\CLSIDFromString", "wstr", CLSID, "ptr", &_clsid))<0
+		throw Exception("Invalid CLSID", -1, CLSID)
+	hr:=DllCall("oleaut32\RegisterActiveObject"
+		, "ptr", &Object, "ptr", &_clsid, "uint", Flags, "uint*", cookie
+		, "uint")
+	if hr<0
+		throw Exception(format("Error 0x{:x}", hr), -1)
+	cookieJar[Object]:=cookie
 }

@@ -51,32 +51,32 @@ OnMessage(0x203, "DoubleClickHandler")
 
 ClearButtonStatusMessage()
 {
-    g_IriBrivMaster.LEGACY_UpdateStatus("")
+	g_IriBrivMaster.LEGACY_UpdateStatus("")
 }
 
 Reload_Clicked()
 {
-    Reload
-    return
+	Reload
+	return
 }
 
 Launch_Clicked()
 {
 	programLoc:=g_IBM_Settings.IBM_Game_Launch
-    try
-    {
+	try
+	{
 		if (g_IBM_Settings.HUB.IBM_Game_Hide_Launcher_Startup)
 			Run, %programLoc%,,Hide, openPID
 		else
 			Run, %programLoc%,,,openPID
-    }
-    catch
-    {
-        MsgBox, 48,Briv Master, Unable to launch game`nVerify the game location is set properly in the Briv Master settings
-    }
+	}
+	catch
+	{
+		MsgBox, 48,Briv Master, Unable to launch game`nVerify the game location is set properly in the Briv Master settings
+	}
 	if (g_SF.GetProcessName(openPID)==g_IBM_Settings.IBM_Game_Exe) ;If we launch the game .exe directly (e.g. Steam) the Run PID will be the game, but for things like EGS it will not so we need to find it
 		g_SF.PID:=openPID
-    else
+	else
 	{
 		Process, Exist, % g_IBM_Settings.IBM_Game_Exe
 		g_SF.PID:=ErrorLevel
@@ -86,11 +86,11 @@ Launch_Clicked()
 
 IBM_HomeGuiClose()
 {
-    MsgBox 36,Briv Master Home,Are you sure you want to `exit? ;4 for Yes/No, 32 for Question Mark
-    IfMsgBox Yes
-        ExitApp
-    IfMsgBox No
-        return True
+	MsgBox 36,Briv Master Home,Are you sure you want to `exit? ;4 for Yes/No, 32 for Question Mark
+	IfMsgBox Yes
+		ExitApp
+	IfMsgBox No
+		return True
 }
 
 CheckControlForTooltip() ;Shows a tooltip if the control with mouseover has a tooltip associated with it
@@ -110,11 +110,11 @@ CheckControlForTooltip() ;Shows a tooltip if the control with mouseover has a to
 
 HideToolTip()
 {
-    ToolTip
+	ToolTip
 }
 
 HideToolTipAndEnable()
 {
-    ToolTip
+	ToolTip
 	g_MouseTooltips.Enabled:=true
 }

@@ -56,9 +56,9 @@
 		Gui, IBM_Home:Add, Picture, x+%buttonSpacing% h-1 w%buttonWidth% gIBM_MainButtons_Save vIBM_MainButtons_Save, %A_LineFile%\..\..\Resources\Save.png
 		Gui, IBM_Home:Add, Picture, x+%buttonSpacing% h-1 w%buttonWidth% gIBM_MainButtons_Reset vIBM_MainButtons_Reset, %A_LineFile%\..\..\Resources\Reset.png
 		this.AddToolTip("IBM_MainButtons_Start", "Start Gem Farm")
-        this.AddToolTip("IBM_MainButtons_Stop", "Stop Gem Farm")
-        this.AddToolTip("IBM_MainButtons_Connect", "Reconnect to Gem Farm script")
-        this.AddToolTip("IBM_MainButtons_Save", "Save Briv Master settings from all tabs")
+		this.AddToolTip("IBM_MainButtons_Stop", "Stop Gem Farm")
+		this.AddToolTip("IBM_MainButtons_Connect", "Reconnect to Gem Farm script")
+		this.AddToolTip("IBM_MainButtons_Save", "Save Briv Master settings from all tabs")
 		this.AddToolTip("IBM_MainButtons_Reset", "Reset stats")
 		;Tab control
 		g_TabControlStartHeight:=buttonWidth+7
@@ -898,8 +898,8 @@
 	}
 
 	UpdateGUISettings()
-    {
-        this.controlLock:=true ;Prevent control g-labels messing things up whilst populating. This is particularly important when one label processes multiple controls, as it can read values out of yet-to-be-populated controls and thus blank that setting
+	{
+		this.controlLock:=true ;Prevent control g-labels messing things up whilst populating. This is particularly important when one label processes multiple controls, as it can read values out of yet-to-be-populated controls and thus blank that setting
 
 		;BRIV MASTER TAB
 
@@ -984,7 +984,7 @@
 		this.RefreshLevelRows()
 
 		this.controlLock:=false
-    }
+	}
 
 	UpdateChestSnatcherOptions() ;ChestSnatcher options in a separate function so that the window can be updated when opened to overwrite unaccepted changes
 	{
@@ -1354,9 +1354,9 @@
 		}
 	}
 	
-    AddToolTip(controlVariableName, tipMessage) ;Used to pre-add tooltips before the GUI is shown. Will not be displayed until ApplyTooltips() is called
-    {
-        if(g_MouseToolTips.ByName.HasKey(controlVariableName))
+	AddToolTip(controlVariableName, tipMessage) ;Used to pre-add tooltips before the GUI is shown. Will not be displayed until ApplyTooltips() is called
+	{
+		if(g_MouseToolTips.ByName.HasKey(controlVariableName))
 			g_MouseToolTips.ByName[controlVariableName].Tip:=tipMessage
 		else 
 		{
@@ -1364,7 +1364,7 @@
 			newTip.Tip:=tipMessage
 			g_MouseToolTips.ByName[controlVariableName]:=newTip
 		}
-    }
+	}
 
 	UpdateToolTip(controlVariableName, tipMessage) ;Used to update a tooltip once the GUI has been shown. Will add if needed
 	{
@@ -1395,12 +1395,12 @@
 		}
 	}
 
-    AddTab(Tabname)
+	AddTab(Tabname)
 	{
-        addedTabs:=Tabname . "|"
-        GuiControl,IBM_Home:,ModronTabControl,% addedTabs
-        g_TabList.=addedTabs
-    }
+		addedTabs:=Tabname . "|"
+		GuiControl,IBM_Home:,ModronTabControl,% addedTabs
+		g_TabList.=addedTabs
+	}
 	
 	GetThemeColourEntries()
 	{
@@ -1449,7 +1449,7 @@ IBM_Generic_Setting_Int() ;Generic g-label for non-hub settings that should be f
 	if (g_IriBrivMaster_GUI.controlLock)
 		return
 	GuiControlGet, value, , %A_GuiControl%
-    g_IBM_Settings[A_GuiControl]:=value+0
+	g_IBM_Settings[A_GuiControl]:=value+0
 }
 
 IBM_Generic_Setting_String() ;Generic g-label for non-hub settings that should be forced to String
@@ -1457,7 +1457,7 @@ IBM_Generic_Setting_String() ;Generic g-label for non-hub settings that should b
 	if (g_IriBrivMaster_GUI.controlLock)
 		return
 	GuiControlGet, value, , %A_GuiControl%
-    g_IBM_Settings[A_GuiControl]:=value . ""
+	g_IBM_Settings[A_GuiControl]:=value . ""
 }
 
 IBM_Generic_Hub_Setting_Int() ;Hub version
@@ -1465,7 +1465,7 @@ IBM_Generic_Hub_Setting_Int() ;Hub version
 	if (g_IriBrivMaster_GUI.controlLock)
 		return
 	GuiControlGet, value, , %A_GuiControl%
-    g_IBM_Settings.HUB[A_GuiControl]:=value+0
+	g_IBM_Settings.HUB[A_GuiControl]:=value+0
 }
 
 /*
@@ -1474,7 +1474,7 @@ IBM_Generic_Hub_Setting_String() ;Hub version - not currently in use as all stri
 	if (g_IriBrivMaster_GUI.controlLock)
 		return
 	GuiControlGet, value, , %A_GuiControl%
-    g_IBM_Settings.HUB[A_GuiControl]:=value . ""
+	g_IBM_Settings.HUB[A_GuiControl]:=value . ""
 }
 */
 
@@ -1519,7 +1519,7 @@ DoubleClickHandler()
 IBM_Game_Platform_ID() ;Translate the AltSubmit index to a platform ID
 {
 	GuiControlGet, value, , IBM_Game_Platform_ID
-    g_IBM_Settings.HUB["IBM_Game_Platform_ID"]:=g_IriBrivMaster.PlatformTable[value].ID
+	g_IBM_Settings.HUB["IBM_Game_Platform_ID"]:=g_IriBrivMaster.PlatformTable[value].ID
 }
 
 IBM_Theme_Manager_Load_Light()
@@ -1691,17 +1691,17 @@ IBM_LevelRow_Feats_Clear()
 
 IBM_MainButtons_Start()
 {
-    g_IriBrivMaster.Run_Clicked()
+	g_IriBrivMaster.Run_Clicked()
 }
 
 IBM_MainButtons_Stop()
 {
-    g_IriBrivMaster.Stop_Clicked()
+	g_IriBrivMaster.Stop_Clicked()
 }
 
 IBM_MainButtons_Connect()
 {
-    g_IriBrivMaster.Connect_Clicked()
+	g_IriBrivMaster.Connect_Clicked()
 }
 
 IBM_MainButtons_Reset()
@@ -2052,7 +2052,7 @@ IBM_LevelManager_Refresh() ;UI refresh button
 
 class IBM_Theme
 {
-    __new(themeSettings:="")
+	__new(themeSettings:="")
 	{
 		this.defaultFontSize:=8
 		if(themeSettings)
@@ -2065,41 +2065,41 @@ class IBM_Theme
 		this.Stock["Dark"]:={"DefaultText":"C0C0C0","WarningText":"F18500","SpecialText1":"8888FF","SpecialText2":"88FF88","TableText":"E0E0E0","EditText":"333333","TableBackground":"555555","WindowBackground":"333333","TrafficLightBad":"F00000","TrafficLightGood":"00F000","TrafficLightNeutral":"FFC000","DarkMode":true}
 	}
 	
-    UseThemeTextColour(guiName, textType:="DefaultText", weight:=400) ;Sets the colour/weight for subsequent text based on the theme
-    {
-        textColor:=Format("{:#x}", this.Theme[textType])
-        Gui, %guiName%:Font, % "c" . textColor . " w" . weight . " s" . this.defaultFontSize
-    }
+	UseThemeTextColour(guiName, textType:="DefaultText", weight:=400) ;Sets the colour/weight for subsequent text based on the theme
+	{
+		textColor:=Format("{:#x}", this.Theme[textType])
+		Gui, %guiName%:Font, % "c" . textColor . " w" . weight . " s" . this.defaultFontSize
+	}
 	
 	GetThemeTextColour(textType:="DefaultText") ;Returns the colour value, including the 'c' prefix, for a theme colour. Needed when changing text colour dynamically
-    {
-        return "c" . Format("{:#x}", this.Theme[textType])
-    }
+	{
+		return "c" . Format("{:#x}", this.Theme[textType])
+	}
 
 	GetThemeBackgroundColour()
-    {
-        return Format("{:#x}", this.Theme["WindowBackground"]) ;No 'c' prefix here
-    }
+	{
+		return Format("{:#x}", this.Theme["WindowBackground"]) ;No 'c' prefix here
+	}
 
 	GetThemeListViewBackgroundColour()
-    {
+	{
 		return Format("{:#x}", this.Theme["TableBackground"]) ;No 'c' prefix here
-    }
+	}
 
-    UseThemeTitleBar(guiName) ;Sets the window title bar to dark if theme is a dark theme. GUI must be shown before calling.
-    {
-        if(this.Theme.DarkMode)
-        {
-            if (A_OSVersion>="10.0.17763" AND SubStr(A_OSVersion, 1, 3)="10.")
-            {
-                attr:=19
-                if (A_OSVersion>="10.0.18985")
-                    attr:=20
-                Gui, %guiName%: +hwndGuiID
-                DllCall("dwmapi\DwmSetWindowAttribute", "ptr", GuiID, "int", attr, "int*", true, "int", 4)             
-            }
-        }
-    }
+	UseThemeTitleBar(guiName) ;Sets the window title bar to dark if theme is a dark theme. GUI must be shown before calling.
+	{
+		if(this.Theme.DarkMode)
+		{
+			if (A_OSVersion>="10.0.17763" AND SubStr(A_OSVersion, 1, 3)="10.")
+			{
+				attr:=19
+				if (A_OSVersion>="10.0.18985")
+					attr:=20
+				Gui, %guiName%: +hwndGuiID
+				DllCall("dwmapi\DwmSetWindowAttribute", "ptr", GuiID, "int", attr, "int*", true, "int", 4)             
+			}
+		}
+	}
 	
 	GetThemeHexString(colourName:="DefaultText") ;Returns the actual hex, without a c prefix or 0x prefix, e.g. pure red would give "FF0000"
 	{

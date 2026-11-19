@@ -77,20 +77,20 @@ class IC_BrivMaster_Heroes_Class ;A class for managing heroes. Or Champions, but
 		}
 	}
 
-    GenerateHeroIDtoHeroIndexMap() ;Returns true on success
+	GenerateHeroIDtoHeroIndexMap() ;Returns true on success
 	{
-        this.IDToIndexMap:={}
-        size:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes.size.Read()
+		this.IDToIndexMap:={}
+		size:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes.size.Read()
 		if(size<=IC_BrivMaster_Heroes_Class.HERO_MIN OR size>=IC_BrivMaster_Heroes_Class.HERO_MAX) ;Sanity check
 			return false
-        this.heroCount:=size
+		this.heroCount:=size
 		loop, %size%
-        {
-            heroID:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[A_Index - 1].def.ID.Read()
-            this.IDToIndexMap[heroID]:=A_Index - 1
-        }
+		{
+			heroID:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[A_Index - 1].def.ID.Read()
+			this.IDToIndexMap[heroID]:=A_Index - 1
+		}
 		return true
-    }
+	}
 }
 
 class IC_BrivMaster_Hero_Class ;Represents a single hero. Can be extended for heroes with specific functionality
@@ -117,9 +117,9 @@ class IC_BrivMaster_Hero_Class ;Represents a single hero. Can be extended for he
 	}
 
 	ReadChampSeat()
-    {
-        return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[this.heroIndex].def.SeatID.Read()
-    }
+	{
+		return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[this.heroIndex].def.SeatID.Read()
+	}
 
 	GetLastUpgradeLevel() ;Loop upgrades until the upgrade with the highest level is found
 	{
@@ -137,22 +137,22 @@ class IC_BrivMaster_Hero_Class ;Represents a single hero. Can be extended for he
 	}
 
 	ReadLevel()
-    {
-        return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[this.heroIndex].level.Read()
-    }
+	{
+		return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[this.heroIndex].level.Read()
+	}
 
 	ReadUltimateCooldown() ;TODO: Does it make sense to have an UltimateReady() wrapper for this? Currently Casino uses direct result to allow for debug/error checking, so might not be very useful
 	{
 		ULTIMATEITEMS_LIST:=g_SF.Memory.GameManager.game.gameInstances[0].Screen.uiController.ultimatesBar.ultimateItems
-        ULTIMATE_CD:=""
+		ULTIMATE_CD:=""
 		loop, % ULTIMATEITEMS_LIST.size.Read()
-        {
-            if (this.ID == ULTIMATEITEMS_LIST[A_Index-1].hero.def.ID.Read())
+		{
+			if (this.ID == ULTIMATEITEMS_LIST[A_Index-1].hero.def.ID.Read())
 			{
 				ULTIMATE_CD:=ULTIMATEITEMS_LIST[A_Index-1].ultimateAttack.internalCooldownTimer.Read()
 				break
 			}
-        }
+		}
 		return ULTIMATE_CD
 	}
 
@@ -160,20 +160,20 @@ class IC_BrivMaster_Hero_Class ;Represents a single hero. Can be extended for he
 	{
 		;TODO: Not sure this function should be hard coded offsets in a specific file like this - constants in a main file might be better? Applies later in this function as well. Maybe some wrapper somewhere?
 		ULTIMATEITEMS_LIST:=g_SF.Memory.GameManager.game.gameInstances[0].Screen.uiController.ultimatesBar.ultimateItems
-        ULTIMATE_HOTKEY:=""
+		ULTIMATE_HOTKEY:=""
 		ADDRESS_ULTIMATEITEMS_LIST:=_IBM_MM.instance.getAddressFromOffsets(ULTIMATEITEMS_LIST.BasePtr.BaseAddress,ULTIMATEITEMS_LIST.FullOffsets*)
 		ADDRESS_ULTIMATEITEMS_ITEMS:=_IBM_MM.instance.getAddressFromOffsets(ADDRESS_ULTIMATEITEMS_LIST,0x10)
 		HEROID_OFFSET:=[ULTIMATEITEMS_LIST.hero.Offset[1],ULTIMATEITEMS_LIST.hero.def.Offset[1],ULTIMATEITEMS_LIST.hero.def.ID.Offset[1]] ;TODO: A lot of this never changes; should be prepared once only. Some kind of ultimate handler object?
 		HEROID_TYPE:=ULTIMATEITEMS_LIST.hero.def.ID.ValueType ;TODO: This one can't change
 		loop, % _IBM_MM.instance.read(ADDRESS_ULTIMATEITEMS_LIST,"Int",0x18)
-        {
-            ADDRESS_ULTIMATEITEMS_ITEM:=_IBM_MM.instance.getAddressFromOffsets(ADDRESS_ULTIMATEITEMS_ITEMS,0x20 + (A_Index-1) * 0x8)
+		{
+			ADDRESS_ULTIMATEITEMS_ITEM:=_IBM_MM.instance.getAddressFromOffsets(ADDRESS_ULTIMATEITEMS_ITEMS,0x20 + (A_Index-1) * 0x8)
 			if (this.ID == _IBM_MM.instance.read(ADDRESS_ULTIMATEITEMS_ITEM,HEROID_TYPE,HEROID_OFFSET*))
 			{
 				ULTIMATE_HOTKEY:=_IBM_MM.instance.read(ADDRESS_ULTIMATEITEMS_ITEM,ULTIMATEITEMS_LIST.HotKey.ValueType,ULTIMATEITEMS_LIST.HotKey.Offset*)
 				break
 			}
-        }
+		}
 		if (ULTIMATE_HOTKEY=="") ;Return empty
 			return
 		ULTIMATE_KEY:=g_InputManager.getKey(ULTIMATE_HOTKEY)
@@ -201,38 +201,38 @@ class IC_BrivMaster_Hero_Class ;Represents a single hero. Can be extended for he
 	}
 
 	ReadMaxHealth()
-    {
-        return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[this.heroIndex].lastMaxHealth.Read()
-    }
+	{
+		return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[this.heroIndex].lastMaxHealth.Read()
+	}
 
 	ReadOverwhelm()
-    {
-        return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[this.heroIndex].overwhelm.Read()
-    }
+	{
+		return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[this.heroIndex].overwhelm.Read()
+	}
 
 	ReadFielded() ;In current formation. !ReadBenched() should be used in preferance to this
 	{
-        FORMATION_SLOTS:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.formation.slots
+		FORMATION_SLOTS:=g_SF.Memory.GameManager.game.gameInstances[0].Controller.formation.slots
 		size:=FORMATION_SLOTS.size.Read()
-        if(size <= 0 OR size > 14) ; sanity check, 12 is the max number of concurrent champions possible.
-            return false
-        loop, %size%
-        {
-            if (this.ID==FORMATION_SLOTS[A_index - 1].hero.def.ID.Read())
+		if(size <= 0 OR size > 14) ; sanity check, 12 is the max number of concurrent champions possible.
+			return false
+		loop, %size%
+		{
+			if (this.ID==FORMATION_SLOTS[A_index - 1].hero.def.ID.Read())
 				return true
-        }
-        return false
-    }
+		}
+		return false
+	}
 
 	ReadSelectedInSeat() ;Selected in their seat - may not be placed / levelled
 	{
 		return this.ID==g_SF.Memory.GameManager.game.gameInstances[0].Screen.uiController.bottomBar.heroPanel.activeBoxes[this.Seat - 1].hero.def.ID.read()
 	}
 
-    ReadName() ;Not stored as the main script doesn't need to know the names outside of the pre-flight check, which is not performance sensitive
+	ReadName() ;Not stored as the main script doesn't need to know the names outside of the pre-flight check, which is not performance sensitive
 	{
-        return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[this.heroIndex].def.name.Read()
-    }
+		return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.HeroHandler.heroes[this.heroIndex].def.name.Read()
+	}
 
 	ReadActiveGameInstanceID() ;This is the instance ID 1 to 4, NOT the ID if the instance in the gameInstances collection
 	{
@@ -241,17 +241,17 @@ class IC_BrivMaster_Hero_Class ;Represents a single hero. Can be extended for he
 
 	HasCoreSpec(specID) ;True if the hero has the specified specialisation saved in the current modron core
 	{
-        HERO_SPECS:=g_SF.Memory.GameManager.game.gameInstances[0].FormationSaveHandler.formationSavesV2[g_SF.Memory.GetActiveModronFormationSaveSlot()].Specializations[this.ID].List
+		HERO_SPECS:=g_SF.Memory.GameManager.game.gameInstances[0].FormationSaveHandler.formationSavesV2[g_SF.Memory.GetActiveModronFormationSaveSlot()].Specializations[this.ID].List
 		size:=HERO_SPECS.size.Read()
 		if(size<=0 OR size>5) ;Sanity check
-            return false
+			return false
 		loop %size%
 		{
 			if(HERO_SPECS[A_Index-1].Read()==specID)
 				return true
 		}
 		return false
-    }
+	}
 
 	;------------------------------------------------------------------------------------
 	;---General functions
@@ -422,18 +422,18 @@ class IC_BrivMaster_Briv_Class extends IC_BrivMaster_Hero_Class
 
 	ReadSBStacks()
 	{
-        return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.StatHandler.BrivSteelbonesStacks.Read()
-    }
+		return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.StatHandler.BrivSteelbonesStacks.Read()
+	}
 
 	FastReadSBStacks() ;InitFastSB() must have been called prior to using this call
 	{
 		return _IBM_MM.instance.read(this.MEMORY_SB_ADDRESS,this.MEMORY_SB_TYPE)
 	}
 
-    ReadHasteStacks()
+	ReadHasteStacks()
 	{
-        return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.StatHandler.BrivSprintStacks.Read()
-    }
+		return g_SF.Memory.GameManager.game.gameInstances[0].Controller.userData.StatHandler.BrivSprintStacks.Read()
+	}
 
 	;------------------------------------------------------------------------------------
 	;---General functions
@@ -613,20 +613,20 @@ class IC_BrivMaster_Elly_Class extends IC_BrivMaster_Hero_Class
 	{
 		;TODO: Not sure this function should be hard coded offsets in a specific file like this - constants in a main file might be better? Applies later in this function as well. Maybe some wrapper somewhere?
 		ULTIMATEITEMS_LIST:=g_SF.Memory.GameManager.game.gameInstances[0].Screen.uiController.ultimatesBar.ultimateItems
-        ULTIMATE_HOTKEY:=""
+		ULTIMATE_HOTKEY:=""
 		ADDRESS_ULTIMATEITEMS_LIST:=g_SF.Memory.ResolvePointers(ULTIMATEITEMS_LIST)
 		ADDRESS_ULTIMATEITEMS_ITEMS:=_IBM_MM.instance.getAddressFromOffsets(ADDRESS_ULTIMATEITEMS_LIST,0x10)
 		HEROID_OFFSET:=[ULTIMATEITEMS_LIST.hero.Offset[1],ULTIMATEITEMS_LIST.hero.def.Offset[1],ULTIMATEITEMS_LIST.hero.def.ID.Offset[1]] ;TODO: A lot of this never changes; should be prepared once only. Some kind of ultimate handler object?
 		HEROID_TYPE:=ULTIMATEITEMS_LIST.hero.def.ID.ValueType ;TODO: This one can't change
 		loop, % _IBM_MM.instance.read(ADDRESS_ULTIMATEITEMS_LIST,"Int",0x18)
-        {
-            ADDRESS_ULTIMATEITEMS_ITEM:=_IBM_MM.instance.getAddressFromOffsets(ADDRESS_ULTIMATEITEMS_ITEMS,0x20 + (A_Index-1) * 0x8)
+		{
+			ADDRESS_ULTIMATEITEMS_ITEM:=_IBM_MM.instance.getAddressFromOffsets(ADDRESS_ULTIMATEITEMS_ITEMS,0x20 + (A_Index-1) * 0x8)
 			if (this.ID == _IBM_MM.instance.read(ADDRESS_ULTIMATEITEMS_ITEM,HEROID_TYPE,HEROID_OFFSET*))
 			{
 				ULTIMATE_HOTKEY:=_IBM_MM.instance.read(ADDRESS_ULTIMATEITEMS_ITEM,ULTIMATEITEMS_LIST.HotKey.ValueType,ULTIMATEITEMS_LIST.HotKey.Offset*)
 				break
 			}
-        }
+		}
 		if (ULTIMATE_HOTKEY=="") ;Return empty
 			return
 		if(!this.InitCotFUltActive()) ;Return empty

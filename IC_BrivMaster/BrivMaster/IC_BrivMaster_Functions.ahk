@@ -34,7 +34,7 @@ class IC_BrivMaster_EllywickCasino_Class ;A class to manage the whole casino, wi
 	Casino() 
 	{
 		if (!g_Heroes[83].ReadBenched()) ;TODO: Could possibly check level as well?
-        {
+		{
 			if(this.ghostLevelling)
 			{
 				ghostLevellingHeroes:=g_IBM.LevelManager.SetupFirstZoneGhost() ;This has to be done after the game has had time to load the UI so hero being seated can be checked
@@ -61,7 +61,7 @@ class IC_BrivMaster_EllywickCasino_Class ;A class to manage the whole casino, wi
 			timeOut:=startTime+(g_IBM_Settings["IBM_Timeout_Dynamic_Casino"]/gameSpeed)*g_IBM.CounterFrequency ;Convert the timeout to counter ticks and add to the start time to determine the max allowed time. This avoids calculations each loop iteration
 			lastLoopEndTime:=startTime ;Set for the first loop
 			while (lastLoopEndTime<timeOut)
-            {
+			{
 				if(this.DeferredDMUlt AND lastLoopEndTime > this.DeferredDMUlt)
 					this.UseDMUlt()
 				if(this.UsedUlt AND !g_Heroes[83].ReadEllywickUltimateActive()) ;Check for completed ultimate
@@ -157,7 +157,7 @@ class IC_BrivMaster_EllywickCasino_Class ;A class to manage the whole casino, wi
 					zoneIncomplete:=false
 				g_IBM.IBM_SleepOffset(lastLoopEndTime,10) ;Offset-based sleep as loop is hugely variable (e.g. ult + levelling vs nothing)
 				DllCall("QueryPerformanceCounter", "Int64*", lastLoopEndTime)
-            }
+			}
 			if(modifierPrePress) ;May have been set but no opportunity to actually level found
 			{
 				g_IBM.LevelManager.SetModifierKey(false) ;Might need to set gamefocus before this
@@ -391,31 +391,31 @@ class IC_BrivMaster_Logger_Class ;A class for recording run logs
 class IC_BrivMaster_DialogSwatter_Class ;A class for swatting dialogs that appears at game start
 {
 	__New()
-    {
-        this.Timer:=ObjBindMethod(this, "Swat")
+	{
+		this.Timer:=ObjBindMethod(this, "Swat")
 		this.KEY_ESC:=g_InputManager.getKey("Esc")
-    }
+	}
 
-    Start()
-    {
+	Start()
+	{
 		timerFunction:=this.Timer
 		SetTimer, %timerFunction%, 100, 0
 		this.StartTime:=A_TickCount
-    }
+	}
 
-    Stop()
-    {
-        timerFunction:=this.Timer
+	Stop()
+	{
+		timerFunction:=this.Timer
 		SetTimer, %timerFunction%, Off
-    }
+	}
 
-    Swat()
-    {
-        if (g_SF.Memory.ReadWelcomeBackActive())
+	Swat()
+	{
+		if (g_SF.Memory.ReadWelcomeBackActive())
 			this.KEY_ESC.KeyPress()
 		else if (A_TickCount > this.StartTime + 3000) ;3s should be enough to get the swat done
 			this.Stop() ;Stop the timer since we don't have anything to swat
-    }
+	}
 }
 
 class IC_BrivMaster_DianaCheese_Class ;A class for cheesing Diana's Electrum drops
@@ -423,8 +423,8 @@ class IC_BrivMaster_DianaCheese_Class ;A class for cheesing Diana's Electrum dro
 	__new()
 	{
 		this.SetCapacity("TZData", 172)
-        DllCall( "RtlFillMemory", "Ptr",this.GetAddress("TZData"), "Ptr",172, "Char",0 ) ; Zero fill memory
-        this.ReadCNETimeZone(this.GetAddress("TZData"))
+		DllCall( "RtlFillMemory", "Ptr",this.GetAddress("TZData"), "Ptr",172, "Char",0 ) ; Zero fill memory
+		this.ReadCNETimeZone(this.GetAddress("TZData"))
 	}
 
 	InWindow()

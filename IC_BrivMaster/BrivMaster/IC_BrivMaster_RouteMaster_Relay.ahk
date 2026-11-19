@@ -249,8 +249,8 @@ class IC_BrivMaster_Relay_Class
 	}
 
 	OpenProcessReader(timeout)
-    {
-        static MaxTime:=""
+	{
+		static MaxTime:=""
 		if (MaxTime=="")
 			MaxTime:=A_TickCount + timeout
 		if (A_TickCount<=MaxTime)
@@ -268,24 +268,24 @@ class IC_BrivMaster_Relay_Class
 			this.LogString.=A_Tickcount . ",OpenProcessReader() timed out`n"
 			this.Stage:=-1
 		}
-    }
+	}
 
 	MemoryManagerRefresh() ;Replacing part of _MemoryManager so we don't need a full instance of everything memory
-    {
-        moduleName:="mono-2.0-bdwgc.dll"
+	{
+		moduleName:="mono-2.0-bdwgc.dll"
 		this.MemoryManager:=New _IC_BrivMaster_Memory_Reader_Class("AHK_PID " . this.PID, handle) ;Must use PID
-        this.handle:=handle
-        if(!IsObject(this.MemoryManager))
-            return false
+		this.handle:=handle
+		if(!IsObject(this.MemoryManager))
+			return false
 		this.gameBaseAddress:=this.MemoryManager.getModuleBaseAddress(moduleName) + this.MEMORY_baseAddress
 		this.LogString.=A_Tickcount . ",MemoryManagerRefresh() complete with gameBaseAddress=[" . this.gameBaseAddress . "]`n"
 		return true
-    }
+	}
 
 	ActivateLastWindow()
-    {
+	{
 		if (!this.RestoreWindow OR this.SavedActiveWindow==this.MainHwnd) ;Don't bother re-activating the main copy of the game
-        {
+		{
 			this.Stage++
 			return
 		}
@@ -295,7 +295,7 @@ class IC_BrivMaster_Relay_Class
 			activateAfter:=A_TickCount + 80
 		}
 		else if (A_TickCount >= activateAfter)
-        {
+		{
 			hwnd := this.Hwnd
 			WinActivate, ahk_id %hwnd% ; Idle Champions likes to be activated before it can be deactivated
 			savedActive := "ahk_id " . this.SavedActiveWindow
@@ -303,11 +303,11 @@ class IC_BrivMaster_Relay_Class
 			this.UpdateState(3)
 			this.Stage++
 		}
-    }
+	}
 
 	SetLastActiveWindowWhileWaitingForGameExe(timeout)
-    {
-        static MaxTime:=""
+	{
+		static MaxTime:=""
 		if (MaxTime=="")
 		{
 			MaxTime := A_TickCount + timeout
@@ -333,13 +333,13 @@ class IC_BrivMaster_Relay_Class
 				}
 				this.Stage++
 			}
-        }
+		}
 		else
 		{
 			this.LogString.=A_Tickcount . ",Relay SetLastActiveWindowWhileWaitingForGameExe() timed out after [" . A_TickCount - (MaxTime-timeout) . "]ms`n"
 			this.Stage:=-1
 		}
-    }
+	}
 
 	SetProcessToRealTime()
 	{
@@ -356,11 +356,11 @@ class IC_BrivMaster_Relay_Class
 	}
 
 	SetPID(timeout)
-    {
-        static MaxTime:=""
+	{
+		static MaxTime:=""
 		if (MaxTime=="")
 			MaxTime:=A_TickCount + timeout
-        if (A_TickCount < MaxTime)
+		if (A_TickCount < MaxTime)
 		{
 			this.PID := this.GetNewPID() ;We need to get a PID that is NOT the same as the one in the main script
 			if (this.PID) ;If we pick up a PID just exit
@@ -374,7 +374,7 @@ class IC_BrivMaster_Relay_Class
 			this.LogString.logString.=A_TickCount . " SetPID() timed out after [" . A_TickCount - (MaxTime-timeout) . "]ms`n"
 			this.Stage:=-1
 		}
-    }
+	}
 
 	GetNewPID() ;Returns a PID that does NOT match the one in the main sharedFunctions - initial COM-based version. This is slower and has more erratic performance than the AHK window-based version, but doesn't need to wait on a window being spawned. With a seperate Relay script the delay is a non-issue so using this option
 	{
@@ -389,7 +389,7 @@ class IC_BrivMaster_Relay_Class
 	}
 
 	OpenProcess()
-    {
+	{
 		programLoc:=this.LaunchCommand
 		try
 		{
@@ -414,7 +414,7 @@ class IC_BrivMaster_Relay_Class
 			this.LogString.=A_Tickcount . ",OpenProcess() failed to launch game`n"
 			this.Stage:=-1
 		}
-    }
+	}
 
 	GetProcessName(processID) ;To check without a window being present
 	{
