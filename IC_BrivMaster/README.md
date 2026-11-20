@@ -362,7 +362,7 @@ Suppress Front Column: If selected champions other than Briv will not be levelle
 
 Ghost Level: During the Casino, level champions that are not part of the formation so long as they will not be placed, either due to all slots being full or the formation being under attack by melee monsters. This option makes it more likely all speed effects will be ready for the first normal zone. Only applied when Thellora in is in the M formation, and should normally be enabled.
 
-Dynamic Diana: Diana can give excess chests after the daily reset. This option will raise her level to 200 for Electrum Chest Scavenger from 3 minutes before the daily reset to 30 minutes after. Her level in the main options should be left at 100.
+Dynamic Diana: Diana can give excess chests after the daily reset. This option will raise her level to 200 for Electrum Chest Scavenger from 3 minutes before the daily reset to 30 minutes after (18:59 to 19:30 UTC). During this window the buying and opening of chests will also be paused. Her level in the main options should be left at 100.
 	
 > Author's Note: This is attempting to profit from a bug, but perhaps if enough people do so it might get fixed...
 

@@ -1445,33 +1445,47 @@ class IC_IriBrivMaster_ChestSnatcher_Class ;A class for managing buying and open
 	{
 		this.Messages:={}
 		this.NextDailyClaimCheck:=A_TickCount+180000 ;Wait 3min before making the first check, to avoid spamming calls whilst testing things
+		this.InDianaCheese:=false
 	}
 
 	Snatch() ;Process chest purchase orders
 	{
-		if (g_IriBrivMaster.SharedRunData.IBM_BuyChests) ;Check daily rewards or Open chests. Note it is assumed that SharedRunData has been checked as valid before calling this function
+		if (g_IBM_Settings["IBM_Level_Diana_Cheese"] AND g_SF.InDianaCheeseWindow()) ;Do not make servercalls during the Diana cheese window
 		{
-			if (g_IBM_Settings.HUB.IBM_DailyRewardClaim_Enable AND A_TickCount>=this.NextDailyClaimCheck)
+			if(!this.InDianaCheese)
 			{
-				this.ClaimDailyRewards()
-				g_IriBrivMaster_GUI.IBM_ChestsSnatcher_Status_Update()
+				this.AddMessage("General","Servercalls paused whilst Diana Cheese is active")
+				this.InDianaCheese:=true
 			}
-			else if (g_IBM_Settings.HUB.IBM_ChestSnatcher_Options_Open_Gold OR g_IBM_Settings.HUB.IBM_ChestSnatcher_Options_Open_Silver)
-			{
-				this.CheckOpenChests()
-			}
-			else
-				g_IriBrivMaster.SharedRunData.IBM_BuyChests:=0 ;Cancel the order
 		}
-		else if (g_IBM_Settings.HUB.IBM_ChestSnatcher_Options_Min_Buy)
+		else
 		{
-			gems:=g_IriBrivMaster.CurrentGems - g_IBM_Settings.HUB.IBM_ChestSnatcher_Options_Min_Gem
-			amountG:=Min(Floor(gems / g_IriBrivMaster.CONSTANT_goldCost), g_IriBrivMaster.CONSTANT_serverRateBuy)
-			if (amountG>=g_IBM_Settings.HUB.IBM_ChestSnatcher_Options_Min_Buy)
+			if(this.InDianaCheese)
+				this.InDianaCheese:=false
+			if (g_IriBrivMaster.SharedRunData.IBM_BuyChests) ;Check daily rewards or Open chests. Note it is assumed that SharedRunData has been checked as valid before calling this function
 			{
-				this.AddMessage("Buy","No open order, buying " . amountG . " Gold...")
-				this.BuyChests(2, amountG)
-				g_IriBrivMaster_GUI.IBM_ChestsSnatcher_Status_Update()
+				if (g_IBM_Settings.HUB.IBM_DailyRewardClaim_Enable AND A_TickCount>=this.NextDailyClaimCheck)
+				{
+					this.ClaimDailyRewards()
+					g_IriBrivMaster_GUI.IBM_ChestsSnatcher_Status_Update()
+				}
+				else if (g_IBM_Settings.HUB.IBM_ChestSnatcher_Options_Open_Gold OR g_IBM_Settings.HUB.IBM_ChestSnatcher_Options_Open_Silver)
+				{
+					this.CheckOpenChests()
+				}
+				else
+					g_IriBrivMaster.SharedRunData.IBM_BuyChests:=0 ;Cancel the order
+			}
+			else if (g_IBM_Settings.HUB.IBM_ChestSnatcher_Options_Min_Buy)
+			{
+				gems:=g_IriBrivMaster.CurrentGems - g_IBM_Settings.HUB.IBM_ChestSnatcher_Options_Min_Gem
+				amountG:=Min(Floor(gems / g_IriBrivMaster.CONSTANT_goldCost), g_IriBrivMaster.CONSTANT_serverRateBuy)
+				if (amountG>=g_IBM_Settings.HUB.IBM_ChestSnatcher_Options_Min_Buy)
+				{
+					this.AddMessage("Buy","No open order, buying " . amountG . " Gold...")
+					this.BuyChests(2, amountG)
+					g_IriBrivMaster_GUI.IBM_ChestsSnatcher_Status_Update()
+				}
 			}
 		}
 	}

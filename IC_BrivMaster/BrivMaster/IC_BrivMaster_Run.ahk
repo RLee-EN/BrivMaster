@@ -90,8 +90,6 @@ class IC_BrivMaster_GemFarm_Class
 		this.offRamp:=false ;Flag when approaching the end of a run for missed-reset detection
 		this.EllywickCasino:=New IC_BrivMaster_EllywickCasino_Class()
 		this.DialogSwatter:=New IC_BrivMaster_DialogSwatter_Class()
-		if (g_IBM_Settings["IBM_Level_Diana_Cheese"]) ;Diana Electrum Chest Cheese things
-			this.DianaCheeseHelper:=New IC_BrivMaster_DianaCheese_Class
 		g_SharedData.UpdateOutbound("IBM_BuyChests",false)
 		this.PreviousZoneStartTime:=A_TickCount ;TODO: These 5 variables are for CheckifStuck, could maybe using encapsulating somewhere else (simple object for it?)
 		this.CheckifStuck_lastCheck:=0
@@ -210,7 +208,7 @@ class IC_BrivMaster_GemFarm_Class
 	{
 		if (currentZone==1)
 		{
-			if (g_IBM_Settings["IBM_Level_Diana_Cheese"] AND this.DianaCheeseHelper.InWindow()) ;Diana can give excess chests after the daily reset, as it seems things don't get synced up until a restart. Level her to 200 only in that window
+			if (g_IBM_Settings["IBM_Level_Diana_Cheese"] AND g_SF.InDianaCheeseWindow()) ;Diana can give excess chests after the daily reset, as it seems things don't get synced up until a restart. Level her to 200 only in that window
 				this.levelManager.OverrideLevelByIDRaiseToMin(148,"min",200)
 			if (g_Heroes[139].inM) ;Thellora in M, either combining or non-combining followed by Casino, which proceed in the same way but with Briv's z1c set when not combining
 			{

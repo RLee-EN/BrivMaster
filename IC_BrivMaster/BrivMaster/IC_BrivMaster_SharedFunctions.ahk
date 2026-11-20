@@ -71,6 +71,12 @@ class IC_BrivMaster_SharedFunctions_Class
                 return false
         return true
     }
+	
+	InDianaCheeseWindow()
+	{
+		currentTime:=SubStr(A_NowUTC, 9, 2)*60 + SubStr(A_NowUTC, 11, 2) ;Time in minutes passed midnight
+		return currentTime>1139 AND currentTime<1170 ;18:59 to 19:30 UTC, which is 11:59 to 12:30 British Columbia time as they no longer do DST
+	}
 }
 
 class IC_BrivMaster_SharedData_Class ;In the shared file as the SettingsPath static is used by the hub for the save/load location TODO: This seems like a lousy reason to load this into the hub, move settings path to SharedFunctions?
