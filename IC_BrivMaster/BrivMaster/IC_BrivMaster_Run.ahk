@@ -330,7 +330,7 @@ class IC_BrivMaster_GemFarm_Class
 				if(A_TickCount>this.lastAction + 5000)
 				{
 					g_IBM.GameMaster.Hwnd:=WinExist("ahk_pid " . g_IBM.GameMaster.PID) ;Attempt to refresh memory reads in case that is causing the issues 
-					g_SF.Memory.OpenProcessReader(this.GameMaster.PID)
+					g_SF.Memory.OpenProcessReader(g_IBM.GameMaster.PID)
 					g_ServerCall.Update()
 					g_IBM.RouteMaster.FallBackFromZone() ;Try a fall back
 					g_IBM.RouteMaster.SetFormation()
