@@ -355,7 +355,7 @@ class IC_BrivMaster_GemFarm_Class
 	
 	ModronResetCheck() 	;Waits for modron to reset. Closes IC if it fails.
 	{
-		if(this.WaitForModronReset(g_IBM_Settings["IBM_Timeout_Static_Reset"])) ;Don't use timeout factor here as this isn't related to host performance
+		if(this.WaitForModronReset()) ;Don't use timeout factor here as this isn't related to host performance
 			this.TriggerStart:=true ;For some users the modron core reset count doesn't always increase post reset, despite my PC and tablet both working reliably. It might be a connectivity issue as it appears to be done by the server
 		else
 		{
@@ -375,19 +375,19 @@ class IC_BrivMaster_GemFarm_Class
 		g_ServerCall.UpdateStackData()
 		if(g_serverCall.ShouldCallPreventStackFail()) ;Only try and manually save if it hasn't already happened
 			g_serverCall.CallPreventStackFail("WaitForModronReset()",true)
-		while (g_SF.Memory.ReadResetting() AND ElapsedTime < timeout)
+		while (g_SF.Memory.ReadResetting() AND ElapsedTime<g_IBM_Settings["IBM_Timeout_Static_Reset"])
 		{
 			this.IBM_Sleep(20)
 			ElapsedTime:=A_TickCount - StartTime
 		}
 		g_SharedData.UpdateOutbound("LoopString", "Loading z1...")
 		this.IBM_Sleep(100) ;20ms is not sufficent for this for all users. Was 50ms in BGF, but looks like the loading part of the reset takes >1s in reality, so using 100ms is a safe play without any performance concerns
-		while(!g_SF.Memory.ReadUserIsInited() AND g_SF.Memory.ReadCurrentZone()<1 AND ElapsedTime<timeout)
+		while(!g_SF.Memory.ReadUserIsInited() AND g_SF.Memory.ReadCurrentZone()<1 AND ElapsedTime<g_IBM_Settings["IBM_Timeout_Static_Reset"])
 		{
 			this.IBM_Sleep(20)
 			ElapsedTime:=A_TickCount - StartTime
 		}
-		if (ElapsedTime>=timeout)
+		if (ElapsedTime>=g_IBM_Settings["IBM_Timeout_Static_Reset"])
 			return false
 		return true
 	}
