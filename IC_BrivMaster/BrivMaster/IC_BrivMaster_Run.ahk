@@ -90,12 +90,8 @@ class IC_BrivMaster_GemFarm_Class
 		this.offRamp:=false ;Flag when approaching the end of a run for missed-reset detection
 		this.EllywickCasino:=New IC_BrivMaster_EllywickCasino_Class()
 		this.DialogSwatter:=New IC_BrivMaster_DialogSwatter_Class()
+		this.StuckChecker:=New IC_BrivMaster_GemFarm_Class.IC_BrivMaster_WD40_Class()
 		g_SharedData.UpdateOutbound("IBM_BuyChests",false)
-		this.PreviousZoneStartTime:=A_TickCount ;TODO: These 5 variables are for CheckifStuck, could maybe using encapsulating somewhere else (simple object for it?)
-		this.CheckifStuck_lastCheck:=0
-		this.CheckifStuck_fallBackTries:=0
-		this.CheckifStuck_Timeout_Toggle:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Stuck"]*0.5) ;30s at default 60s
-		this.CheckifStuck_Timeout_Fallback:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Stuck"]*0.75) ;45s at default 60s
 		Loop
 		{
 			this.currentZone:=g_SF.Memory.ReadCurrentZone() ;Class level variable so it can be reset during rollbacks TODO: Move to RouteMaster
@@ -134,7 +130,7 @@ class IC_BrivMaster_GemFarm_Class
 				lastResetCount:=g_SF.Memory.ReadResetsCount()
 				if (!this.RouteMaster.ExpectingGameRestart() OR this.RouteMaster.cycleMax==1) ;When running hybrid don't do standard online chests during offline runs as there will be an early save when closing the game. Without hybrid we don't have a choice
 					g_SharedData.UpdateOutbound("IBM_BuyChests",true)
-				this.PreviousZoneStartTime:=A_TickCount
+				g_IBM.StuckChecker.UpdateZoneTime()
 				this.TriggerStart:=false
 				DllCall("QueryPerformanceCounter", "Int64*", lastLoopEndTime) ;Set for the first loop
 				g_SharedData.UpdateOutbound("LoopString","Main Loop")
@@ -146,7 +142,7 @@ class IC_BrivMaster_GemFarm_Class
 			{
 				this.Logger.ResetReached()
 				this.ModronResetCheck()
-				Continue ;ModronResetCheck() updates PreviousZoneStartTime in all cases, so the CheckifStuck() call we'd proceed to will never do anything, and the delay is unwanted in this case - we've been waiting on the reset
+				Continue ;ModronResetCheck() updates the StuckChecker in all cases, so the StuchChecker.Check() call we'd proceed to will never do anything, and the delay is unwanted in this case - we've been waiting on the reset
 			}
 			else if (this.currentZone<=this.RouteMaster.targetZone) ;If we've passed the reset but the modron has yet to trigger we don't want to spam the game with inputs
 			{
@@ -184,7 +180,7 @@ class IC_BrivMaster_GemFarm_Class
 				this.Logger.ResetReached()
 				g_SharedData.UpdateOutbound("LoopString","Pending modron reset")
 			}
-			this.CheckifStuck() ;Does not need to set TriggerStart as any exit that would require it will also call RestartAdventure() which sets it to true
+			this.StuckChecker.Check() ;Does not need to set TriggerStart as any exit that would require it will also call RestartAdventure() which sets it to true
 			;Loop frequency check
 			this.IBM_SleepOffset(lastLoopEndTime,30)
 			DllCall("QueryPerformanceCounter", "Int64*", lastLoopEndTime)
@@ -306,39 +302,60 @@ class IC_BrivMaster_GemFarm_Class
 		}
 	}
 
-	CheckifStuck() ;Check if stuck based on the g_IBM_Settings["IBM_Timeout_Static_Stuck"] setting TODO: This logic needs a review, with some running multiple times when it probably doesn't need to?
+	class IC_BrivMaster_WD40_Class ;Class for checking if the game is stuck and trying to unstick it
 	{
-		dtCurrentZoneTime:=A_TickCount - this.PreviousZoneStartTime
-		if (dtCurrentZoneTime<=this.CheckifStuck_Timeout_Toggle) ;No action up to default 30s
-			return false
-		else if (dtCurrentZoneTime>this.CheckifStuck_Timeout_Toggle AND dtCurrentZoneTime<=this.CheckifStuck_Timeout_Fallback AND dtCurrentZoneTime - this.CheckifStuck_lastCheck > 3000) ;Default 30 to 45s, toggle progress every 3s
+		__new()
 		{
-			this.RouteMaster.ToggleAutoProgress(1, true)
-			if(dtCurrentZoneTime<this.CheckifStuck_Timeout_Fallback-3000) ;TODO: What purpose does this serve? To avoid interfering with the next check block?
-				this.CheckifStuck_lastCheck:=dtCurrentZoneTime
+			this.previousZoneStartTime:=A_TickCount
+			this.lastAction:=0
+			this.timeoutToggle:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Stuck"]*0.5) ;30s at default 60s
+			this.timeoutFallback:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Stuck"]*0.75) ;45s at default 60s
 		}
-		if (dtCurrentZoneTime>this.CheckifStuck_Timeout_Fallback AND this.CheckifStuck_fallBackTries < 3 AND dtCurrentZoneTime - this.CheckifStuck_lastCheck>10000) ;Default 45s, fall back to previous zone and try to continue
+		
+		Check() ;Check if stuck based on the g_IBM_Settings["IBM_Timeout_Static_Stuck"] setting TODO: This logic needs a review, with some running multiple times when it probably doesn't need to?
 		{
-			;Reset memory values in case they missed an update.
-			this.GameMaster.Hwnd:=WinExist("ahk_exe " . g_IBM_Settings["IBM_Game_Exe"]) ;TODO: This can screw things up if the there is more than one process open. At least align with .PID?
-			g_SF.Memory.OpenProcessReader()
-			g_ServerCall.Update()
-			this.RouteMaster.FallBackFromZone() ;Try a fall back
-			this.RouteMaster.SetFormation()
-			this.RouteMaster.ToggleAutoProgress(1, true)
-			this.CheckifStuck_lastCheck:=dtCurrentZoneTime
-			this.CheckifStuck_fallBackTries++
+			deltaT:=A_TickCount - this.previousZoneStartTime
+			if (deltaT<=this.timeoutToggle) ;No action up to default 30s
+				return
+			else if (deltaT<=this.timeoutFallback) ;Default 30 to 45s, toggle progress every 3s
+			{
+				if(A_TickCount>this.lastAction + 3000)
+				{
+					g_IBM.RouteMaster.ToggleAutoProgress(1,true)
+					this.lastAction:=A_TickCount
+				}
+			}
+			else if (deltaT<=g_IBM_Settings["IBM_Timeout_Static_Stuck"]) ;Default 45 to 60s, fall back to previous zone and try to continue every 5s
+			{
+				if(A_TickCount>this.lastAction + 5000)
+				{
+					g_IBM.GameMaster.Hwnd:=WinExist("ahk_pid " . g_IBM.GameMaster.PID) ;Attempt to refresh memory reads in case that is causing the issues 
+					g_SF.Memory.OpenProcessReader(this.GameMaster.PID)
+					g_ServerCall.Update()
+					g_IBM.RouteMaster.FallBackFromZone() ;Try a fall back
+					g_IBM.RouteMaster.SetFormation()
+					g_IBM.RouteMaster.ToggleAutoProgress(1,true)
+					this.lastAction:=A_TickCount
+				}
+			}
+			else ;After default 60s, restart
+			{
+				g_IBM.GameMaster.RestartAdventure("Game is stuck z[" . g_SF.Memory.ReadCurrentZone() . "]" )
+				g_IBM.GameMaster.SafetyCheck()
+				this.UpdateZoneTime()
+				this.Reset()
+			}	
 		}
-		if (dtCurrentZoneTime>g_IBM_Settings["IBM_Timeout_Static_Stuck"]) ;After default 60s, restart
+		
+		UpdateZoneTime()
 		{
-			this.GameMaster.RestartAdventure("Game is stuck z[" . g_SF.Memory.ReadCurrentZone() . "]" )
-			this.GameMaster.SafetyCheck()
-			this.PreviousZoneStartTime:=A_TickCount
-			this.CheckifStuck_lastCheck:=0
-			this.CheckifStuck_fallBackTries:=0
-			return true
+			this.previousZoneStartTime:=A_TickCount
 		}
-		return false
+		
+		Reset()
+		{
+			this.lastAction:=0
+		}
 	}
 
 	RollBackAction(returnZone) ;Actions to take once a rollback is detected, separate function as needed for normal re-opens and for restarts
@@ -359,10 +376,9 @@ class IC_BrivMaster_GemFarm_Class
 		{
 			this.GameMaster.RestartAdventure("Modron reset timed out z[" . g_SF.Memory.ReadCurrentZone() . "]",true) ;true flags this as a modron reset restart, where we should try and return to the adventure we're in if the server appears to be down
 			this.GameMaster.SafetyCheck()
-			this.CheckifStuck_lastCheck:=0 ;This used to be done by passing a 'force' option to CheckifStuck(), which seemed clunky - but we still need to reset these as we are no longer stuck. Or at least we hope not. TODO: Make a stuck-checker object to contain this stuff?
-			this.CheckifStuck_fallBackTries:=0
+			this.StuckChecker.Reset()
 		}
-		this.PreviousZoneStartTime:=A_TickCount
+		g_IBM.StuckChecker.UpdateZoneTime()
 	}
 	
 	WaitForModronReset()

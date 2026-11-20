@@ -407,7 +407,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 		if(g_IBM_Settings["IBM_OffLine_Blank_Stop"])
 			this.ToggleAutoProgress(1,false,true)
 		g_SharedData.UpdateOutbound("IBM_RunControl_StackString","Restarted at z" . returnZone . " in " . Round(totalTime/ 1000,2) . "s")
-		g_IBM.PreviousZoneStartTime:=A_TickCount
+		g_IBM.StuckChecker.UpdateZoneTime()
 	}
 
 	TestForSteelBonesStackFarming() ;Returns true if we have a failure, namely the out of stacks and need to force restart case. TODO: Are we covering needing to stack at the recovery minimum when only offline stacking?
@@ -742,10 +742,10 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 				Critical Off
 				g_IBM.GameMaster.RestartAdventure("Online stack took too long (" . ROUND(ElapsedTime/(g_IBM.CounterFrequency*1000),1) . "s)")
 				g_IBM.GameMaster.SafetyCheck()
-				g_IBM.PreviousZoneStartTime:=A_TickCount
+				g_IBM.StuckChecker.UpdateZoneTime()
 				return
 			}
-			g_IBM.PreviousZoneStartTime:=A_TickCount
+			g_IBM.StuckChecker.UpdateZoneTime()
 			runComplete:=g_SF.Memory.ReadHighestZone()>=this.RM.targetZone ;If we'll jump from stack zone straight to reset zone things get a bit weird as the game behaves differently transitioning to the reset zone
 			if (!runComplete AND g_SF.Memory.ReadQuestRemaining()>0)
 			{
@@ -972,7 +972,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 			g_IBM.Logger.AddMessage("Offline:" . g_SF.Memory.ReadCurrentZone() . "," . stacks . ",Time:" . A_TickCount - this.offlineSaveTime . ",Attempt:" . retryAttempt . ",OfflineTime:" . g_SF.Memory.ReadOfflineTime() . ",Server:" . g_SF.Memory.IBM_GetWebRootFriendly())
 			this.offlineSaveTime:=-1 ;Flags as not active
 		}
-		g_IBM.PreviousZoneStartTime:=A_TickCount
+		g_IBM.StuckChecker.UpdateZoneTime()
 		generatedStacks:=g_Heroes[58].ReadSBStacks() - startStacks
 		totalTime:=A_TickCount-offlineStartTime
 		if (retryAttempt > maxRetries+1) ;We're a bit screwed at this point, +1 as retryAttempt is really 'tryAttempt'
@@ -1320,7 +1320,7 @@ class IC_BrivMaster_RouteMaster_Class ;A class for managing routes
 	{
 		g_IBM.levelManager.LevelClickDamage()
 		this.StartAutoProgressSoft()
-		g_IBM.PreviousZoneStartTime:=A_TickCount
+		g_IBM.StuckChecker.UpdateZoneTime()
 	}
 }
 
