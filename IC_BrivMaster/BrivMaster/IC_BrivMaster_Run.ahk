@@ -312,7 +312,7 @@ class IC_BrivMaster_GemFarm_Class
 			this.timeoutFallback:=CEIL(g_IBM_Settings["IBM_Timeout_Static_Stuck"]*0.75) ;45s at default 60s
 		}
 		
-		Check() ;Check if stuck based on the g_IBM_Settings["IBM_Timeout_Static_Stuck"] setting TODO: This logic needs a review, with some running multiple times when it probably doesn't need to?
+		Check() ;Check if stuck based on the g_IBM_Settings["IBM_Timeout_Static_Stuck"] setting
 		{
 			deltaT:=A_TickCount - this.previousZoneStartTime
 			if (deltaT<=this.timeoutToggle) ;No action up to default 30s
